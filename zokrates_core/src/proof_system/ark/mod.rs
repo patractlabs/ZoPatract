@@ -1,11 +1,9 @@
 pub mod gm17;
+pub mod groth16;
 
 use crate::ir::{CanonicalLinComb, Prog, Statement, Witness};
-use ark_gm17::Proof;
-use ark_gm17::{
-    create_random_proof, generate_random_parameters, prepare_verifying_key, verify_proof,
-    ProvingKey,
-};
+use ark_gm17;
+use ark_groth16;
 
 use crate::flat_absy::FlatVariable;
 use ark_ec::PairingEngine;
@@ -169,17 +167,17 @@ impl<T: Field + ArkFieldExtensions> Prog<T> {
 }
 
 impl<T: Field + ArkFieldExtensions> Computation<T> {
-    pub fn prove(self, params: &ProvingKey<T::ArkEngine>) -> Proof<T::ArkEngine> {
+    pub fn prove(self, params: &ark_gm17::ProvingKey<T::ArkEngine>) -> ark_gm17::Proof<T::ArkEngine> {
         let rng = &mut rand_0_7::rngs::StdRng::from_entropy();
 
-        let proof = create_random_proof(self.clone(), params, rng).unwrap();
+        let proof = ark_gm17::create_random_proof(self.clone(), params, rng).unwrap();
 
-        let pvk = prepare_verifying_key(&params.vk);
+        let pvk = ark_gm17::prepare_verifying_key(&params.vk);
 
         // extract public inputs
         let public_inputs = self.public_inputs_values();
 
-        assert!(verify_proof(&pvk, &proof, &public_inputs).unwrap());
+        assert!(ark_gm17::verify_proof(&pvk, &proof, &public_inputs).unwrap());
 
         proof
     }
@@ -192,14 +190,47 @@ impl<T: Field + ArkFieldExtensions> Computation<T> {
             .collect()
     }
 
-    pub fn setup(self) -> ProvingKey<T::ArkEngine> {
+    pub fn setup(self) -> ark_gm17::ProvingKey<T::ArkEngine> {
         let rng = &mut rand_0_7::rngs::StdRng::from_entropy();
 
         // run setup phase
-        generate_random_parameters(self, rng).unwrap()
+        ark_gm17::generate_random_parameters(self, rng).unwrap()
     }
 }
 
+impl<T: Field + ArkFieldExtensions> Computation<T> {
+
+    pub fn groth16_prove(self, params: &ark_groth16::ProvingKey<T::ArkEngine>) -> ark_groth16::Proof<T::ArkEngine> {
+
+        let rng = &mut rand_0_7::rngs::StdRng::from_entropy();
+
+        let proof = ark_groth16::create_random_proof(self.clone(), params, rng).unwrap();
+
+        let pvk = ark_groth16::prepare_verifying_key(&params.vk);
+
+        // extract public inputs
+        let public_inputs = self.groth16_public_inputs_values();
+
+        assert!(ark_groth16::verify_proof(&pvk, &proof, &public_inputs).unwrap());
+
+        proof
+    }
+
+    pub fn groth16_public_inputs_values(&self) -> Vec<<T::ArkEngine as PairingEngine>::Fr> {
+        self.program
+            .public_inputs(self.witness.as_ref().unwrap())
+            .iter()
+            .map(|v| v.clone().into_ark())
+            .collect()
+    }
+
+    pub fn groth16_setup(self) -> ark_groth16::ProvingKey<T::ArkEngine> {
+        let rng = &mut rand_0_7::rngs::StdRng::from_entropy();
+
+        // run setup phase
+        ark_groth16::generate_random_parameters(self, rng).unwrap()
+    }
+}
 impl<T: Field + ArkFieldExtensions>
     ConstraintSynthesizer<<<T as ArkFieldExtensions>::ArkEngine as PairingEngine>::Fr>
     for Computation<T>
@@ -295,5 +326,50 @@ mod parse {
         bytes.reverse();
 
         format!("0x{}", hex::encode(&bytes))
+    }
+}
+
+pub mod serialization {
+    use ark_ec::PairingEngine;
+    use ark_ff::FromBytes;
+    use proof_system::{G1Affine, G2Affine, G2AffineFq};
+    use zokrates_field::ArkFieldExtensions;
+
+    #[inline]
+    fn decode_hex(value: String) -> Vec<u8> {
+        let mut bytes = hex::decode(value.strip_prefix("0x").unwrap()).unwrap();
+        bytes.reverse();
+        bytes
+    }
+
+    pub fn to_g1<T: ArkFieldExtensions>(g1: G1Affine) -> <T::ArkEngine as PairingEngine>::G1Affine {
+        let mut bytes = vec![];
+        bytes.append(&mut decode_hex(g1.0));
+        bytes.append(&mut decode_hex(g1.1));
+        bytes.push(0u8); // infinity flag
+
+        <T::ArkEngine as PairingEngine>::G1Affine::read(&*bytes).unwrap()
+    }
+
+    pub fn to_g2<T: ArkFieldExtensions>(g2: G2Affine) -> <T::ArkEngine as PairingEngine>::G2Affine {
+        let mut bytes = vec![];
+        bytes.append(&mut decode_hex((g2.0).0));
+        bytes.append(&mut decode_hex((g2.0).1));
+        bytes.append(&mut decode_hex((g2.1).0));
+        bytes.append(&mut decode_hex((g2.1).1));
+        bytes.push(0u8); // infinity flag
+
+        <T::ArkEngine as PairingEngine>::G2Affine::read(&*bytes).unwrap()
+    }
+
+    pub fn to_g2_fq<T: ArkFieldExtensions>(
+        g2: G2AffineFq,
+    ) -> <T::ArkEngine as PairingEngine>::G2Affine {
+        let mut bytes = vec![];
+        bytes.append(&mut decode_hex(g2.0));
+        bytes.append(&mut decode_hex(g2.1));
+        bytes.push(0u8); // infinity flag
+
+        <T::ArkEngine as PairingEngine>::G2Affine::read(&*bytes).unwrap()
     }
 }

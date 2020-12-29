@@ -86,6 +86,7 @@ impl TryFrom<(&str, &str, &str)> for Parameters {
             (BackendParameter::Ark, CurveParameter::Bls12_377, SchemeParameter::GM17) => Ok(()),
             (BackendParameter::Ark, CurveParameter::Bw6_761, SchemeParameter::GM17) => Ok(()),
             (BackendParameter::Ark, CurveParameter::Bn128, SchemeParameter::GM17) => Ok(()),
+            (BackendParameter::Ark, CurveParameter::Bn128, SchemeParameter::G16) => Ok(()),
             #[cfg(feature = "libsnark")]
             (BackendParameter::Libsnark, CurveParameter::Bn128, SchemeParameter::GM17) => Ok(()),
             #[cfg(feature = "libsnark")]

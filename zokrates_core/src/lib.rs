@@ -28,6 +28,8 @@ cfg_if::cfg_if! {
         extern crate ark_bls12_377;
         extern crate ark_bn254;
         extern crate ark_bw6_761;
+        // extern crate ark_snark;
+        extern crate ark_groth16;
         extern crate ark_gm17;
         extern crate ark_ff;
         extern crate ark_ec;
