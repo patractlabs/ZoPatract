@@ -2,9 +2,16 @@ use proof_system::scheme::Scheme;
 use proof_system::solidity::{
     SolidityAbi, SOLIDITY_G2_ADDITION_LIB, SOLIDITY_PAIRING_LIB, SOLIDITY_PAIRING_LIB_V2,
 };
-use proof_system::{G1Affine, G2Affine, SolidityCompatibleField, SolidityCompatibleScheme};
+use proof_system::{
+    G1Affine, G2Affine, SolidityCompatibleField, SolidityCompatibleScheme
+};
 use regex::Regex;
-use zokrates_field::Field;
+use zokrates_field::{Bls12_377Field, Bls12_381Field, Bn128Field, Field};
+
+pub trait NotBw6_761Field {}
+impl NotBw6_761Field for Bls12_377Field {}
+impl NotBw6_761Field for Bls12_381Field {}
+impl NotBw6_761Field for Bn128Field {}
 
 pub struct G16;
 
@@ -252,3 +259,7 @@ contract Verifier {
     }
 }
 "#;
+
+// const INK_CONTRACT_TEMPLATE: &str =r#"
+//
+// "#;

@@ -134,6 +134,22 @@ dependencies = [
 ]
 
 [[package]]
+name = "ark-groth16"
+version = "0.1.0"
+source = "git+https://github.com/arkworks-rs/groth16#772f43bc1fec7f108ab2d60059654c5c63fe4126"
+dependencies = [
+ "ark-crypto-primitives",
+ "ark-ec",
+ "ark-ff",
+ "ark-poly",
+ "ark-relations",
+ "ark-serialize",
+ "ark-std",
+ "bench-utils",
+ "rand 0.7.3",
+]
+
+[[package]]
 name = "ark-poly"
 version = "0.1.0"
 source = "git+https://github.com/arkworks-rs/algebra#902c8c2882a8aa6f87395df888b50090e2705cac"
@@ -2069,6 +2085,7 @@ dependencies = [
  "ark-ec",
  "ark-ff",
  "ark-gm17",
+ "ark-groth16",
  "ark-relations",
  "ark-serialize",
  "bellman_ce",

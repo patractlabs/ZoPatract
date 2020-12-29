@@ -11,7 +11,7 @@ default = []
 libsnark = ["cc", "cmake", "git2"]
 wasm = ["bellman_ce/nolog", "bellman_ce/wasm"]
 multicore = ["bellman_ce/multicore"]
-ark = ["ark-ff", "ark-ec", "ark-bn254", "ark-bls12-377", "ark-bw6-761", "ark-gm17", "ark-serialize", "ark-relations"]
+ark = ["ark-ff", "ark-ec", "ark-bn254", "ark-bls12-377", "ark-bw6-761", "ark-gm17", "ark-groth16", "ark-serialize", "ark-relations"]
 
 [dependencies]
 cfg-if = "0.1"
@@ -44,7 +44,7 @@ ark-bn254 = { git = "https://github.com/arkworks-rs/curves", features = ["curve"
 ark-bls12-377 = { git = "https://github.com/arkworks-rs/curves", features = ["curve"], default-features = false, optional = true }
 ark-bw6-761 = { git = "https://github.com/arkworks-rs/curves", default-features = false, optional = true }
 
-
+ark-groth16 = { git = "https://github.com/arkworks-rs/groth16", default-features = false, optional = true }
 ark-gm17 = { git = "https://github.com/arkworks-rs/gm17", default-features = false, optional = true }
 ark-serialize = { git = "https://github.com/arkworks-rs/algebra", default-features = false, optional = true }
 ark-relations = { git = "https://github.com/arkworks-rs/snark", default-features = false, optional = true }

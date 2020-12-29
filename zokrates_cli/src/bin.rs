@@ -437,7 +437,7 @@ fn cli() -> Result<(), String> {
     const WITNESS_DEFAULT_PATH: &str = "witness";
     const JSON_PROOF_PATH: &str = "proof.json";
     let default_curve = env::var("ZOKRATES_CURVE").unwrap_or(constants::BN128.into());
-    let default_backend = env::var("ZOKRATES_BACKEND").unwrap_or(constants::BELLMAN.into());
+    let default_backend = env::var("ZOKRATES_BACKEND").unwrap_or(constants::ARK.into());
     let default_scheme = env::var("ZOKRATES_PROVING_SCHEME").unwrap_or(constants::G16.into());
     let default_solidity_abi = "v1";
     let default_stdlib_path = dirs::home_dir()
@@ -850,6 +850,12 @@ fn cli() -> Result<(), String> {
                     ProgEnum::Bn128Program(p) => cli_setup::<_, GM17, Ark>(p, sub_matches),
                     _ => unreachable!(),
                 },
+                Parameters(BackendParameter::Ark, _, SchemeParameter::G16) => match prog {
+                    ProgEnum::Bls12_377Program(p) => cli_setup::<_, G16, Ark>(p, sub_matches),
+                    ProgEnum::Bw6_761Program(p) => cli_setup::<_, G16, Ark>(p, sub_matches),
+                    ProgEnum::Bn128Program(p) => cli_setup::<_, G16, Ark>(p, sub_matches),
+                    _ => unreachable!(),
+                },
                 #[cfg(feature = "libsnark")]
                 Parameters(
                     BackendParameter::Libsnark,
@@ -921,13 +927,25 @@ fn cli() -> Result<(), String> {
                     _ => unreachable!(),
                 },
                 Parameters(BackendParameter::Ark, _, SchemeParameter::GM17) => match prog {
-                    ProgEnum::Bls12_377Program(p) => {
-                        cli_generate_proof::<_, GM17, Ark>(p, sub_matches)
-                    }
-                    ProgEnum::Bw6_761Program(p) => {
-                        cli_generate_proof::<_, GM17, Ark>(p, sub_matches)
-                    }
-                    ProgEnum::Bn128Program(p) => cli_generate_proof::<_, GM17, Ark>(p, sub_matches),
+                    ProgEnum::Bls12_377Program(p) =>
+                        cli_generate_proof::<_, GM17, Ark>(p, sub_matches),
+
+                    ProgEnum::Bw6_761Program(p) =>
+                        cli_generate_proof::<_, GM17, Ark>(p, sub_matches),
+
+                    ProgEnum::Bn128Program(p) =>
+                        cli_generate_proof::<_, GM17, Ark>(p, sub_matches),
+                    _ => unreachable!(),
+                },
+                Parameters(BackendParameter::Ark, _, SchemeParameter::G16) => match prog {
+                    ProgEnum::Bls12_377Program(p) =>
+                        cli_generate_proof::<_, G16, Ark>(p, sub_matches),
+
+                    ProgEnum::Bw6_761Program(p) =>
+                        cli_generate_proof::<_, G16, Ark>(p, sub_matches),
+
+                    ProgEnum::Bn128Program(p) =>
+                        cli_generate_proof::<_, G16, Ark>(p, sub_matches),
                     _ => unreachable!(),
                 },
                 #[cfg(feature = "libsnark")]
@@ -1021,6 +1039,9 @@ fn cli() -> Result<(), String> {
                 ) => cli_verify::<Bw6_761Field, GM17, Ark>(sub_matches),
                 Parameters(BackendParameter::Ark, CurveParameter::Bn128, SchemeParameter::GM17) => {
                     cli_verify::<Bn128Field, GM17, Ark>(sub_matches)
+                }
+                Parameters(BackendParameter::Ark, CurveParameter::Bn128, SchemeParameter::G16) => {
+                    cli_verify::<Bn128Field, G16, Ark>(sub_matches)
                 }
                 #[cfg(feature = "libsnark")]
                 Parameters(
