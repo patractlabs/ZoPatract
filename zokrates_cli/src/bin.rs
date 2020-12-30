@@ -21,10 +21,8 @@ use std::string::String;
 use zokrates_abi::Encode;
 use zokrates_core::compile::{check, compile, CompilationArtifacts, CompileError};
 use zokrates_core::ir::{self, ProgEnum};
-use zokrates_core::proof_system::{
-    ark::Ark, bellman::Bellman, gm17::GM17, groth16::G16, SolidityCompatibleField,
-};
-use zokrates_core::proof_system::{Backend, Scheme, SolidityAbi, SolidityCompatibleScheme};
+use zokrates_core::proof_system::{ark::Ark, bellman::Bellman, gm17::GM17, groth16::G16, SolidityCompatibleField, InkCompatibleField, InkAbi};
+use zokrates_core::proof_system::{Backend, Scheme, SolidityAbi, SolidityCompatibleScheme,InkCompatibleScheme};
 use zokrates_core::typed_absy::abi::Abi;
 use zokrates_core::typed_absy::{types::Signature, Type};
 use zokrates_field::{Bls12_377Field, Bls12_381Field, Bn128Field, Bw6_761Field, Field};
@@ -82,7 +80,8 @@ fn cli_generate_proof<T: Field, S: Scheme<T>, B: Backend<T, S>>(
     Ok(())
 }
 
-fn cli_export_verifier<T: SolidityCompatibleField, S: SolidityCompatibleScheme<T>>(
+fn cli_export_verifier<S: SolidityCompatibleField+InkCompatibleField,
+    T: SolidityCompatibleScheme<S> + InkCompatibleScheme<S>>(
     sub_matches: &ArgMatches,
 ) -> Result<(), String> {
     println!("Exporting verifier...");
@@ -96,9 +95,11 @@ fn cli_export_verifier<T: SolidityCompatibleField, S: SolidityCompatibleScheme<T
     let vk = serde_json::from_reader(reader)
         .map_err(|why| format!("Couldn't deserialize verifying key: {}", why))?;
 
-    let abi = SolidityAbi::from(sub_matches.value_of("solidity-abi").unwrap())?;
+    let sol_abi = SolidityAbi::from(sub_matches.value_of("contract-abi").unwrap())?;
+    let ink_abi = InkAbi::from(sub_matches.value_of("contract-abi").unwrap())?;
 
-    let verifier = S::export_solidity_verifier(vk, abi);
+    let sol_verifier = T::export_solidity_verifier(vk, sol_abi);
+    let ink_verifier = T::export_ink_verifier(ink_abi);
 
     //write output file
     let output_path = Path::new(sub_matches.value_of("output").unwrap());
@@ -106,9 +107,15 @@ fn cli_export_verifier<T: SolidityCompatibleField, S: SolidityCompatibleScheme<T
         .map_err(|why| format!("Couldn't create {}: {}", output_path.display(), why))?;
 
     let mut writer = BufWriter::new(output_file);
-
     writer
-        .write_all(&verifier.as_bytes())
+        .write_all(&sol_verifier.as_bytes())
+        .map_err(|_| "Failed writing output to file.".to_string())?;
+
+    let output_file = File::create(Path::new("ink_verifier.rs"))
+        .map_err(|why| format!("Couldn't create {}: {}", output_path.display(), why))?;
+    let mut writer = BufWriter::new(output_file);
+    writer
+        .write_all(&ink_verifier.as_bytes())
         .map_err(|_| "Failed writing output to file.".to_string())?;
 
     println!("Finished exporting verifier.");
@@ -436,7 +443,7 @@ fn cli() -> Result<(), String> {
     const VERIFICATION_CONTRACT_DEFAULT_PATH: &str = "verifier.sol";
     const WITNESS_DEFAULT_PATH: &str = "witness";
     const JSON_PROOF_PATH: &str = "proof.json";
-    let default_curve = env::var("ZOKRATES_CURVE").unwrap_or(constants::BN128.into());
+    let default_curve = env::var("ZOKRATES_CURVE").unwrap_or(constants::BLS12_381.into());
     let default_backend = env::var("ZOKRATES_BACKEND").unwrap_or(constants::ARK.into());
     let default_scheme = env::var("ZOKRATES_PROVING_SCHEME").unwrap_or(constants::G16.into());
     let default_solidity_abi = "v1";
@@ -573,7 +580,7 @@ fn cli() -> Result<(), String> {
         )
     )
     .subcommand(SubCommand::with_name("export-verifier")
-        .about("Exports a verifier as Solidity smart contract")
+        .about("Exports two verifiers as solidity smart contract and ink smart contract!")
         .arg(Arg::with_name("input")
             .short("i")
             .long("input")
@@ -606,9 +613,9 @@ fn cli() -> Result<(), String> {
             .required(false)
             .possible_values(SCHEMES)
             .default_value(&default_scheme)
-        ).arg(Arg::with_name("solidity-abi")
+        ).arg(Arg::with_name("contract-abi")
             .short("a")
-            .long("solidity-abi")
+            .long("contract-abi")
             .help("Flag for setting the version of the ABI Encoder used in the contract")
             .takes_value(true)
             .possible_values(&["v1", "v2"])
@@ -852,6 +859,7 @@ fn cli() -> Result<(), String> {
                 },
                 Parameters(BackendParameter::Ark, _, SchemeParameter::G16) => match prog {
                     ProgEnum::Bls12_377Program(p) => cli_setup::<_, G16, Ark>(p, sub_matches),
+                    ProgEnum::Bls12_381Program(p) => cli_setup::<_, G16, Ark>(p, sub_matches),
                     ProgEnum::Bw6_761Program(p) => cli_setup::<_, G16, Ark>(p, sub_matches),
                     ProgEnum::Bn128Program(p) => cli_setup::<_, G16, Ark>(p, sub_matches),
                     _ => unreachable!(),
@@ -894,6 +902,9 @@ fn cli() -> Result<(), String> {
                 (CurveParameter::Bn128, SchemeParameter::PGHR13) => {
                     cli_export_verifier::<Bn128Field, PGHR13>(sub_matches)
                 }
+                (_, SchemeParameter::G16) => {
+                    cli_export_verifier::<Bn128Field, G16>(sub_matches)
+                }
                 _ => Err(format!("Could not export verifier with given parameters (curve: {}, scheme: {}): not supported", curve, scheme))
             }?
         }
@@ -930,6 +941,9 @@ fn cli() -> Result<(), String> {
                     ProgEnum::Bls12_377Program(p) =>
                         cli_generate_proof::<_, GM17, Ark>(p, sub_matches),
 
+                    ProgEnum::Bls12_381Program(p) =>
+                        cli_generate_proof::<_, G16, Ark>(p, sub_matches),
+
                     ProgEnum::Bw6_761Program(p) =>
                         cli_generate_proof::<_, GM17, Ark>(p, sub_matches),
 
@@ -939,6 +953,9 @@ fn cli() -> Result<(), String> {
                 },
                 Parameters(BackendParameter::Ark, _, SchemeParameter::G16) => match prog {
                     ProgEnum::Bls12_377Program(p) =>
+                        cli_generate_proof::<_, G16, Ark>(p, sub_matches),
+
+                    ProgEnum::Bls12_381Program(p) =>
                         cli_generate_proof::<_, G16, Ark>(p, sub_matches),
 
                     ProgEnum::Bw6_761Program(p) =>
@@ -1037,11 +1054,21 @@ fn cli() -> Result<(), String> {
                     CurveParameter::Bw6_761,
                     SchemeParameter::GM17,
                 ) => cli_verify::<Bw6_761Field, GM17, Ark>(sub_matches),
-                Parameters(BackendParameter::Ark, CurveParameter::Bn128, SchemeParameter::GM17) => {
-                    cli_verify::<Bn128Field, GM17, Ark>(sub_matches)
-                }
+                Parameters(BackendParameter::Ark,
+                           CurveParameter::Bn128,
+                           SchemeParameter::GM17
+                ) => cli_verify::<Bn128Field, GM17, Ark>(sub_matches),
                 Parameters(BackendParameter::Ark, CurveParameter::Bn128, SchemeParameter::G16) => {
                     cli_verify::<Bn128Field, G16, Ark>(sub_matches)
+                }
+                Parameters(BackendParameter::Ark, CurveParameter::Bls12_377, SchemeParameter::G16) => {
+                    cli_verify::<Bls12_377Field, G16, Ark>(sub_matches)
+                }
+                Parameters(BackendParameter::Ark, CurveParameter::Bls12_381, SchemeParameter::G16) => {
+                    cli_verify::<Bls12_381Field, G16, Ark>(sub_matches)
+                }
+                Parameters(BackendParameter::Ark, CurveParameter::Bw6_761, SchemeParameter::G16) => {
+                    cli_verify::<Bw6_761Field, G16, Ark>(sub_matches)
                 }
                 #[cfg(feature = "libsnark")]
                 Parameters(
