@@ -83,9 +83,15 @@ impl TryFrom<(&str, &str, &str)> for Parameters {
         match (&backend, &curve, &proving_scheme) {
             (BackendParameter::Bellman, CurveParameter::Bn128, SchemeParameter::G16) => Ok(()),
             (BackendParameter::Bellman, CurveParameter::Bls12_381, SchemeParameter::G16) => Ok(()),
+
             (BackendParameter::Ark, CurveParameter::Bls12_377, SchemeParameter::GM17) => Ok(()),
+            (BackendParameter::Ark, CurveParameter::Bls12_381, SchemeParameter::GM17) => Ok(()),
             (BackendParameter::Ark, CurveParameter::Bw6_761, SchemeParameter::GM17) => Ok(()),
             (BackendParameter::Ark, CurveParameter::Bn128, SchemeParameter::GM17) => Ok(()),
+
+            (BackendParameter::Ark, CurveParameter::Bls12_377, SchemeParameter::G16) => Ok(()),
+            (BackendParameter::Ark, CurveParameter::Bls12_381, SchemeParameter::G16) => Ok(()),
+            (BackendParameter::Ark, CurveParameter::Bw6_761, SchemeParameter::G16) => Ok(()),
             (BackendParameter::Ark, CurveParameter::Bn128, SchemeParameter::G16) => Ok(()),
             #[cfg(feature = "libsnark")]
             (BackendParameter::Libsnark, CurveParameter::Bn128, SchemeParameter::GM17) => Ok(()),

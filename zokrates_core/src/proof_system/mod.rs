@@ -6,9 +6,11 @@ pub mod libsnark;
 
 mod scheme;
 mod solidity;
+mod ink;
 
 pub use self::scheme::*;
 pub use self::solidity::*;
+pub use self::ink::*;
 
 use crate::ir;
 use serde::de::DeserializeOwned;

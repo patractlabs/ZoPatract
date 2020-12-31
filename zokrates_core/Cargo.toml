@@ -42,6 +42,7 @@ ark-ec = { git = "https://github.com/arkworks-rs/algebra", default-features = fa
 
 ark-bn254 = { git = "https://github.com/arkworks-rs/curves", features = ["curve"], default-features = false, optional = true }
 ark-bls12-377 = { git = "https://github.com/arkworks-rs/curves", features = ["curve"], default-features = false, optional = true }
+#ark-bls12-381 = { git = "https://github.com/arkworks-rs/curves", features = ["curve"], default-features = false, optional = true }
 ark-bw6-761 = { git = "https://github.com/arkworks-rs/curves", default-features = false, optional = true }
 
 ark-groth16 = { git = "https://github.com/arkworks-rs/groth16", default-features = false, optional = true }

@@ -45,8 +45,7 @@ impl<T: Field + ArkFieldExtensions + NotBw6_761Field> Backend<T, G16> for Ark {
         let computation = Computation::with_witness(program, witness);
         let params = ProvingKey::<<T as ArkFieldExtensions>::ArkEngine>::deserialize_uncompressed(
             &mut proving_key.as_slice(),
-        )
-            .unwrap();
+        ).unwrap();
 
         let proof = computation.clone().groth16_prove(&params);
         let proof_points = ProofPoints {
@@ -200,11 +199,11 @@ mod tests {
     use crate::ir::{Function, Interpreter, Prog, Statement};
 
     use super::*;
-    use zokrates_field::{Bls12_377Field, /*Bw6_761Field*/};
+    use zokrates_field::{Bls12_381Field, /*Bw6_761Field*/};
 
     #[test]
     fn verify_bls12_377_field() {
-        let program: Prog<Bls12_377Field> = Prog {
+        let program: Prog<Bls12_381Field> = Prog {
             main: Function {
                 id: String::from("main"),
                 arguments: vec![FlatVariable::new(0)],
@@ -217,16 +216,16 @@ mod tests {
             private: vec![false],
         };
 
-        let keypair = <Ark as Backend<Bls12_377Field, G16>>::setup(program.clone());
+        let keypair = <Ark as Backend<Bls12_381Field, G16>>::setup(program.clone());
         let interpreter = Interpreter::default();
 
         let witness = interpreter
-            .execute(&program, &vec![Bls12_377Field::from(42)])
+            .execute(&program, &vec![Bls12_381Field::from(42)])
             .unwrap();
 
         let proof =
-            <Ark as Backend<Bls12_377Field, G16>>::generate_proof(program, witness, keypair.pk);
-        let ans = <Ark as Backend<Bls12_377Field, G16>>::verify(keypair.vk, proof);
+            <Ark as Backend<Bls12_381Field, G16>>::generate_proof(program, witness, keypair.pk);
+        let ans = <Ark as Backend<Bls12_381Field, G16>>::verify(keypair.vk, proof);
 
         assert!(ans);
     }

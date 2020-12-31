@@ -2,9 +2,7 @@ use proof_system::scheme::Scheme;
 use proof_system::solidity::{
     SolidityAbi, SOLIDITY_G2_ADDITION_LIB, SOLIDITY_PAIRING_LIB, SOLIDITY_PAIRING_LIB_V2,
 };
-use proof_system::{
-    G1Affine, G2Affine, G2AffineFq, SolidityCompatibleField, SolidityCompatibleScheme,
-};
+use proof_system::{G1Affine, G2Affine, G2AffineFq, SolidityCompatibleField, SolidityCompatibleScheme, InkCompatibleScheme, InkAbi, InkCompatibleField};
 use regex::Regex;
 use zokrates_field::{Bls12_377Field, Bls12_381Field, Bn128Field, Bw6_761Field, Field};
 
@@ -41,7 +39,14 @@ impl Scheme<Bw6_761Field> for GM17 {
     type VerificationKey = VerificationKey<G1Affine, G2AffineFq>;
     type ProofPoints = ProofPoints<G1Affine, G2AffineFq>;
 }
-
+impl<T: InkCompatibleField + NotBw6_761Field> InkCompatibleScheme<T> for GM17 {
+    fn export_ink_verifier(abi: InkAbi) -> String {
+        return match abi {
+            InkAbi::V1 => String::from(INK_CONTRACT_TEMPLATE),
+            InkAbi::V2 => String::from(INK_CONTRACT_TEMPLATE),
+        }
+    }
+}
 impl<T: SolidityCompatibleField + NotBw6_761Field> SolidityCompatibleScheme<T> for GM17 {
     fn export_solidity_verifier(
         vk: <GM17 as Scheme<T>>::VerificationKey,
@@ -281,3 +286,5 @@ contract Verifier {
     }
 }
 "#;
+
+const INK_CONTRACT_TEMPLATE:&str = r#"GM17 Ink Contract unimplemented!"#;

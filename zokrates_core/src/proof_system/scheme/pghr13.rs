@@ -2,7 +2,7 @@ use proof_system::scheme::Scheme;
 use proof_system::solidity::{
     SolidityAbi, SOLIDITY_G2_ADDITION_LIB, SOLIDITY_PAIRING_LIB, SOLIDITY_PAIRING_LIB_V2,
 };
-use proof_system::{G1Affine, G2Affine, SolidityCompatibleField, SolidityCompatibleScheme};
+use proof_system::{G1Affine, G2Affine, SolidityCompatibleField, SolidityCompatibleScheme, InkCompatibleScheme, InkCompatibleField, InkAbi};
 use regex::Regex;
 use zokrates_field::Field;
 
@@ -35,6 +35,15 @@ pub struct VerificationKey<G1, G2> {
 impl<T: Field> Scheme<T> for PGHR13 {
     type VerificationKey = VerificationKey<G1Affine, G2Affine>;
     type ProofPoints = ProofPoints<G1Affine, G2Affine>;
+}
+
+impl<T: InkCompatibleField> InkCompatibleScheme<T> for PGHR13 {
+    fn export_ink_verifier(abi: InkAbi) -> String {
+        return match abi {
+            InkAbi::V1 => String::from(INK_CONTRACT_TEMPLATE),
+            InkAbi::V2 => String::from(INK_CONTRACT_TEMPLATE),
+        }
+    }
 }
 
 impl<T: SolidityCompatibleField> SolidityCompatibleScheme<T> for PGHR13 {
@@ -313,3 +322,5 @@ const CONTRACT_TEMPLATE: &str = r#"contract Verifier {
     }
 }
 "#;
+
+const INK_CONTRACT_TEMPLATE:&str = r#"PGHR13 Ink Contract unimplemented!"#;
