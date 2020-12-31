@@ -19,7 +19,7 @@ impl<T: Field + ArkFieldExtensions + NotBw6_761Field> Backend<T, GM17> for Ark {
         let parameters = Computation::without_witness(program).gm17_setup();
 
         let mut pk: Vec<u8> = Vec::new();
-        parameters. _uncompressed(&mut pk).unwrap();
+        parameters.serialize_uncompressed(&mut pk).unwrap();
 
         let vk = VerificationKey {
             h: parse_g2::<T>(&parameters.vk.h_g2),

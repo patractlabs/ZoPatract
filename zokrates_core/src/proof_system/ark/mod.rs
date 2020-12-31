@@ -166,40 +166,6 @@ impl<T: Field + ArkFieldExtensions> Prog<T> {
     }
 }
 
-#[macro_export]
-macro_rules! computation_basic {
-    ($algorithm:ident, $name:ident) => {
-        paste::item! {
-            impl<T: Field + ArkFieldExtensions> Computation<T> {
-                pub fn [<$name _prove>](self, params: &<$algorithm>::ProvingKey<T::ArkEngine>) -> $algorithm::Proof<T::ArkEngine> {
-                    let rng = &mut rand_0_7::rngs::StdRng::from_entropy();
-
-                    let proof = $algorithm::create_random_proof(self.clone(), params, rng).unwrap();
-
-                    let pvk = $algorithm::prepare_verifying_key(&params.vk);
-
-                    // extract public inputs
-                    let public_inputs = self.public_inputs_values();
-
-                    assert!($algorithm::verify_proof(&pvk, &proof, &public_inputs).unwrap());
-
-                    proof
-                }
-
-                pub fn [<$name _setup>](self) -> <$algorithm>::ProvingKey<T::ArkEngine> {
-                    let rng = &mut rand_0_7::rngs::StdRng::from_entropy();
-
-                    // run setup phase
-                    $algorithm::generate_random_parameters(self, rng).unwrap()
-                }
-            }
-        }
-    }
-}
-
-computation_basic!(ark_gm17, gm17);
-computation_basic!(ark_groth16, groth16);
-
 impl<T: Field + ArkFieldExtensions> Computation<T> {
     pub fn public_inputs_values(&self) -> Vec<<T::ArkEngine as PairingEngine>::Fr> {
         self.program
@@ -307,6 +273,40 @@ mod parse {
         format!("0x{}", hex::encode(&bytes))
     }
 }
+
+#[macro_export]
+macro_rules! computation_basic {
+    ($algorithm:tt, $name:ident) => {
+        paste::item! {
+            impl<T: Field + ArkFieldExtensions> Computation<T> {
+                pub fn [<$name _prove>](self, params: &$algorithm::ProvingKey<T::ArkEngine>) -> $algorithm::Proof<T::ArkEngine> {
+                    let rng = &mut rand_0_7::rngs::StdRng::from_entropy();
+
+                    let proof = $algorithm::create_random_proof(self.clone(), params, rng).unwrap();
+
+                    let pvk = $algorithm::prepare_verifying_key(&params.vk);
+
+                    // extract public inputs
+                    let public_inputs = self.public_inputs_values();
+
+                    assert!($algorithm::verify_proof(&pvk, &proof, &public_inputs).unwrap());
+
+                    proof
+                }
+
+                pub fn [<$name _setup>](self) -> $algorithm::ProvingKey<T::ArkEngine> {
+                    let rng = &mut rand_0_7::rngs::StdRng::from_entropy();
+
+                    // run setup phase
+                    $algorithm::generate_random_parameters(self, rng).unwrap()
+                }
+            }
+        }
+    }
+}
+
+computation_basic!(ark_gm17, gm17);
+computation_basic!(ark_groth16, groth16);
 
 pub mod serialization {
     use ark_ec::PairingEngine;
