@@ -16,10 +16,10 @@ use proof_system::{Backend, Proof, SetupKeypair};
 
 impl<T: Field + ArkFieldExtensions + NotBw6_761Field> Backend<T, GM17> for Ark {
     fn setup(program: Prog<T>) -> SetupKeypair<<GM17 as Scheme<T>>::VerificationKey> {
-        let parameters = Computation::without_witness(program).setup();
+        let parameters = Computation::without_witness(program).gm17_setup();
 
         let mut pk: Vec<u8> = Vec::new();
-        parameters.serialize_uncompressed(&mut pk).unwrap();
+        parameters. _uncompressed(&mut pk).unwrap();
 
         let vk = VerificationKey {
             h: parse_g2::<T>(&parameters.vk.h_g2),
@@ -49,7 +49,7 @@ impl<T: Field + ArkFieldExtensions + NotBw6_761Field> Backend<T, GM17> for Ark {
         )
         .unwrap();
 
-        let proof = computation.clone().prove(&params);
+        let proof = computation.clone().gm17_prove(&params);
         let proof_points = ProofPoints {
             a: parse_g1::<T>(&proof.a),
             b: parse_g2::<T>(&proof.b),
@@ -109,7 +109,7 @@ impl Backend<Bw6_761Field, GM17> for Ark {
     fn setup(
         program: Prog<Bw6_761Field>,
     ) -> SetupKeypair<<GM17 as Scheme<Bw6_761Field>>::VerificationKey> {
-        let parameters = Computation::without_witness(program).setup();
+        let parameters = Computation::without_witness(program).gm17_setup();
 
         let mut pk: Vec<u8> = Vec::new();
         parameters.serialize_uncompressed(&mut pk).unwrap();
@@ -143,7 +143,7 @@ impl Backend<Bw6_761Field, GM17> for Ark {
             )
                 .unwrap();
 
-        let proof = computation.clone().prove(&params);
+        let proof = computation.clone().gm17_prove(&params);
         let proof_points = ProofPoints {
             a: parse_g1::<Bw6_761Field>(&proof.a),
             b: parse_g2_fq::<Bw6_761Field>(&proof.b),
