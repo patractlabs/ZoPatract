@@ -29,5 +29,5 @@ tempdir = "0.3"
 fs_extra = "1.1.0"
 
 [[bin]]
-name = "zokrates"
+name = "ZoPatract"
 path = "src/bin.rs"
