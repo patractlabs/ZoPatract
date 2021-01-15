@@ -85,7 +85,6 @@ fn cli_export_verifier<S: SolidityCompatibleField+InkCompatibleField,
     sub_matches: &ArgMatches,
 ) -> Result<(), String> {
     println!("Exporting verifier...");
-
     // read vk file
     let input_path = Path::new(sub_matches.value_of("input").unwrap());
     let input_file = File::open(&input_path)
@@ -95,28 +94,33 @@ fn cli_export_verifier<S: SolidityCompatibleField+InkCompatibleField,
     let vk = serde_json::from_reader(reader)
         .map_err(|why| format!("Couldn't deserialize verifying key: {}", why))?;
 
-    let sol_abi = SolidityAbi::from(sub_matches.value_of("contract-abi").unwrap())?;
-    let ink_abi = InkAbi::from(sub_matches.value_of("contract-abi").unwrap())?;
-
-    let sol_verifier = T::export_solidity_verifier(vk, sol_abi);
-    let ink_verifier = T::export_ink_verifier(ink_abi);
-
     //write output file
-    let output_path = Path::new(sub_matches.value_of("output").unwrap());
-    let output_file = File::create(&output_path)
-        .map_err(|why| format!("Couldn't create {}: {}", output_path.display(), why))?;
+    match sub_matches.value_of("contract-type").unwrap() {
+        "sol" => {
+            let sol_abi = SolidityAbi::from(sub_matches.value_of("contract-abi").unwrap())?;
+            let sol_verifier = T::export_solidity_verifier(vk, sol_abi);
 
-    let mut writer = BufWriter::new(output_file);
-    writer
-        .write_all(&sol_verifier.as_bytes())
-        .map_err(|_| "Failed writing output to file.".to_string())?;
+            let output_path = Path::new(sub_matches.value_of("output").unwrap());
+            let output_file = File::create(&output_path)
+                .map_err(|why| format!("Couldn't create {}: {}", output_path.display(), why))?;
+            let mut writer = BufWriter::new(output_file);
+            writer
+                .write_all(&sol_verifier.as_bytes())
+                .map_err(|_| "Failed writing output to file.".to_string())?;
+        },
+        "ink" => {
+            let ink_abi = InkAbi::from(sub_matches.value_of("contract-abi").unwrap())?;
+            let ink_verifier = T::export_ink_verifier(ink_abi);
 
-    let output_file = File::create(Path::new("ink_verifier.rs"))
-        .map_err(|why| format!("Couldn't create {}: {}", output_path.display(), why))?;
-    let mut writer = BufWriter::new(output_file);
-    writer
-        .write_all(&ink_verifier.as_bytes())
-        .map_err(|_| "Failed writing output to file.".to_string())?;
+            let output_file = File::create(Path::new("ink_verifier.rs"))
+                .map_err(|why| format!("Couldn't create ink_verifier.rs: {}", why))?;
+            let mut writer = BufWriter::new(output_file);
+            writer
+                .write_all(&ink_verifier.as_bytes())
+                .map_err(|_| "Failed writing output to file.".to_string())?;
+        },
+        _ => return Err("Invalid contract type!".to_owned())
+    }
 
     println!("Finished exporting verifier.");
     Ok(())
@@ -447,6 +451,7 @@ fn cli() -> Result<(), String> {
     let default_backend = env::var("ZOKRATES_BACKEND").unwrap_or(constants::ARK.into());
     let default_scheme = env::var("ZOKRATES_PROVING_SCHEME").unwrap_or(constants::G16.into());
     let default_solidity_abi = "v1";
+    let default_contract_type = "ink";
     let default_stdlib_path = dirs::home_dir()
         .map(|p| p.join(".zokrates/stdlib"))
         .unwrap();
@@ -620,6 +625,14 @@ fn cli() -> Result<(), String> {
             .takes_value(true)
             .possible_values(&["v1", "v2"])
             .default_value(&default_solidity_abi)
+            .required(false)
+        ).arg(Arg::with_name("contract-type")
+            .short("t")
+            .long("contract-type")
+            .help("Flag for setting contract type(ink or solidity)")
+            .takes_value(true)
+            .possible_values(&["ink", "sol"])
+            .default_value(&default_contract_type)
             .required(false)
         )
     )
