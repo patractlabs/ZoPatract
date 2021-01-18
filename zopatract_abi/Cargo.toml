@@ -1,0 +1,12 @@
+[package]
+name = "zopatract_abi"
+version = "0.1.3"
+authors = ["Thibaut Schaeffer <thibaut@schaeff.fr>"]
+edition = "2018"
+
+[dependencies]
+zopatract_field = { version = "0.3", path = "../zopatract_field" }
+zopatract_core = { version = "0.5", path = "../zopatract_core", default-features = false }
+serde = "1.0"
+serde_derive = "1.0"
+serde_json = "1.0"

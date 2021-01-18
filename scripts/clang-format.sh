@@ -1,5 +1,5 @@
 #!/bin/bash
-# Usage: ./clang-format.sh zokrates_core/lib
+# Usage: ./clang-format.sh zopatract_core/lib
 
 dir=$1
 
