@@ -1,6 +1,6 @@
-# Introduction
+# ZoPatract
 
-ZoPatract is a toolbox for zkSNARKs on Substrate. It helps you use verifiable computation in your DApp, from the specification of your program in a high level language to generating proofs of computation to verifying those proofs in [ink!](https://github.com/paritytech/ink).
+[ZoPatract](https://patractlabs.github.io/ZoPatract) is a toolbox for zkSNARKs on Substrate. It helps you use verifiable computation in your DApp, from the specification of your program in a high level language to generating proofs of computation to verifying those proofs in [ink!](https://github.com/paritytech/ink).
 
 
 ## Background on zkSNARKs
