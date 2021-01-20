@@ -2,7 +2,7 @@
 # will have compiled files and executables
 target
 
-# ZoKrates default files
+# ZoPatract default files
 out
 out.ztf
 abi.json

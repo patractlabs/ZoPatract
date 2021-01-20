@@ -1,0 +1,12 @@
+[package]
+name = "zopatract_fs_resolver"
+version = "0.5.1"
+authors = ["Thibaut Schaeffer <thibaut@schaeff.fr>"]
+repository = "https://github.com/patractlabs/ZoPatract.git"
+edition = "2018"
+
+[dependencies]
+zopatract_common = { path = "../zopatract_common" }
+
+[dev-dependencies]
+tempfile = "3"

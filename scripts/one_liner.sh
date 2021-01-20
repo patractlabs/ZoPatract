@@ -4,14 +4,14 @@ set -e
 
 help() {
     cat <<'EOF'
-Install ZoKrates
+Install ZoPatract
 
 Usage:
     one_liner.sh [options]
 
 Options:
     -f, --force     Force overwriting an existing installation
-    --to LOCATION   Where to install (default ~/.zokrates)
+    --to LOCATION   Where to install (default ~/.zopatract)
 EOF
 }
 
@@ -217,7 +217,7 @@ get_architecture() {
 }
 
 say() {
-    echo "ZoKrates: $1"
+    echo "ZoPatract: $1"
 }
 
 say_err() {
@@ -259,7 +259,7 @@ main() {
     need_cmd mktemp
     need_cmd tar
 
-    git="ZoKrates/ZoKrates"
+    git="ZoPatract/ZoPatract"
 
     url="https://github.com/$git"
 
@@ -279,20 +279,20 @@ main() {
 
     # Set target directory
     if [ -z $dest ]; then
-        dest="$HOME/.zokrates"
+        dest="$HOME/.zopatract"
     fi
 
     say_err "Installing to: $dest"
 
     # Fetch archive
-    url="$url/download/$tag/zokrates-$tag-$arch.$ext"
+    url="$url/download/$tag/zopatract-$tag-$arch.$ext"
 
     say_err "Fetching: $url"
 
     td=$(mktemp -d || mktemp -d -t tmp)
     curl -sLf --show-error $url | tar -C $td -xzf -
 
-    # install ZoKrates
+    # install ZoPatract
     for f in $(ls $td); do
         # put folders into $dest
         if [ -d $td/$f ]; then
@@ -322,8 +322,8 @@ main() {
 
     cat <<EOF
 
-ZoKrates was installed successfully!
-If this is the first time you're installing ZoKrates run the following:
+ZoPatract was installed successfully!
+If this is the first time you're installing ZoPatract run the following:
 export PATH=\$PATH:$abspath/bin
 EOF
 }

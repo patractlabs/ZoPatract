@@ -1,5 +1,5 @@
 
-<img src="http://www.redaktion.tu-berlin.de/fileadmin/fg308/icons/projekte/logos/ZoKrates_logo.svg" width="100%" height="180">
+<img src="http://www.redaktion.tu-berlin.de/fileadmin/fg308/icons/projekte/logos/ZoPatract_logo.svg" width="100%" height="180">
 
 # ZoPatract
 
@@ -19,7 +19,7 @@ Unless you explicitly state otherwise, any contribution you intentionally submit
 
 ### Git Hooks
 
-You can enable zokrates git hooks locally by running:
+You can enable zopatract git hooks locally by running:
 
 ```sh
 git config core.hooksPath .githooks

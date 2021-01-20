@@ -1,0 +1,17 @@
+{
+  "name": "ace-mode-zopatract",
+  "version": "1.0.2",
+  "description": "Ace Mode for ZoPatract DSL",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "zopatract",
+    "ace",
+    "mode",
+    "brace"
+  ],
+  "author": "Darko Macesic",
+  "license": "LGPL"
+}

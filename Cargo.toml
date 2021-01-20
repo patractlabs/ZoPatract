@@ -1,14 +1,14 @@
 [workspace]
 
 members = [
-    "zokrates_common",
-    "zokrates_core",
-    "zokrates_cli",
-    "zokrates_fs_resolver",
-    "zokrates_stdlib",
-    "zokrates_abi",
-    "zokrates_test",
-    "zokrates_core_test",
+    "zopatract_common",
+    "zopatract_core",
+    "zopatract_cli",
+    "zopatract_fs_resolver",
+    "zopatract_stdlib",
+    "zopatract_abi",
+    "zopatract_test",
+    "zopatract_core_test",
 ]
 
-exclude = ["zokrates_js"]
+exclude = ["zopatract_js"]

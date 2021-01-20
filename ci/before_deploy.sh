@@ -19,22 +19,22 @@ main() {
 
     case $TARGET in
         x86_64-pc-windows-gnu)
-            BINARY_NAME=zokrates.exe
+            BINARY_NAME=zopatract.exe
             ;;
         *)
-            BINARY_NAME=zokrates
+            BINARY_NAME=zopatract
             ;;
     esac
 
     test -f Cargo.lock || cargo generate-lockfile
 
-    cross build --bin zokrates --target $TARGET --release
+    cross build --bin zopatract --target $TARGET --release
 
     # Package artifacts
     # Binary
     cp target/$TARGET/release/$BINARY_NAME $stage/
     # Standard library
-    cp -r zokrates_stdlib/stdlib $stage
+    cp -r zopatract_stdlib/stdlib $stage
 
     cd $stage
     tar czf $src/$CRATE_NAME-$TRAVIS_TAG-$TARGET.tar.gz *

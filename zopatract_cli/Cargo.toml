@@ -1,0 +1,33 @@
+[package]
+name = "zopatract_cli"
+version = "0.6.3"
+authors = ["Jacob Eberhardt <jacob.eberhardt@tu-berlin.de>", "Dennis Kuhnert <mail@kyroy.com>", "Thibaut Schaeffer <thibaut@schaeff.fr>"]
+repository = "https://github.com/patractlabs/ZoPatract.git"
+edition = "2018"
+
+[features]
+default = []
+libsnark = ["zopatract_core/libsnark"]
+
+[dependencies]
+clap = "2.26.2"
+bincode = "0.8.0"
+regex = "0.2"
+zopatract_field = { version = "0.3", path = "../zopatract_field" }
+zopatract_abi = { version = "0.1", path = "../zopatract_abi" }
+zopatract_core = { version = "0.5", path = "../zopatract_core", features = ["multicore", "ark"] }
+zopatract_fs_resolver = { version = "0.5", path = "../zopatract_fs_resolver" }
+serde_json = "1.0"
+dirs = "3.0.1"
+
+[dev-dependencies]
+glob = "0.2.11"
+assert_cli = "0.5"
+tempdir = "0.3"
+
+[build-dependencies]
+fs_extra = "1.1.0"
+
+[[bin]]
+name = "zopatract"
+path = "src/bin.rs"
