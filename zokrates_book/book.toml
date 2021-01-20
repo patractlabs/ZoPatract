@@ -2,4 +2,12 @@
 authors = ["schaeff"]
 multilingual = false
 src = "src"
-title = "ZoKrates"
+title = "ZoPatract"
+
+[build]
+build-dir = "gh-pages"
+
+[output.html]
+default-theme = "dark"
+preferred-dark-theme = "ayu"
+git-repository-url = "https://github.com/patractlabs/ZoPatract"

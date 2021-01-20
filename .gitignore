@@ -21,3 +21,6 @@ witness
 .idea
 .vscode
 *.iml
+
+# mdbook
+zokrates_book/gh-pages

@@ -1,6 +1,6 @@
 # Introduction
 
-ZoKrates is a toolbox for zkSNARKs on Ethereum. It helps you use verifiable computation in your DApp, from the specification of your program in a high level language to generating proofs of computation to verifying those proofs in Solidity.
+ZoPatract is a toolbox for zkSNARKs on Substrate. It helps you use verifiable computation in your DApp, from the specification of your program in a high level language to generating proofs of computation to verifying those proofs in [ink!](https://github.com/paritytech/ink).
 
 
 ## Background on zkSNARKs
@@ -11,12 +11,7 @@ One particular family of ZKPs is described as zero-knowledge **S**uccinct **N**o
 
 For further details we refer the reader to some introductory material provided by the community: [[1]](https://z.cash/technology/zksnarks/),[[2]](https://medium.com/@VitalikButerin/zkSNARKs-under-the-hood-b33151a013f6), [[3]](https://blog.decentriq.ch/zk-SNARKs-primer-part-one/).
 
-## Motivation
-
-Ethereum runs computations on all nodes of the network, resulting in high costs, limits in complexity, and low privacy. zkSNARKs have been enabling to only verify computations on-chain for a fraction of the cost of running them, but are hard to grasp and work with.
-
-ZoKrates bridges this gap. It helps you create off-chain programs and link them to the Ethereum blockchain, expanding the possibilities for your DApp.
 
 ## License
 
-ZoKrates is released under the GNU Lesser General Public License v3.
+ZoPatract is a fork of [ZoKrates](https://github.com/Zokrates/ZoKrates), follows the GNU Lesser General Public License v3.
