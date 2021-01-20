@@ -24,20 +24,62 @@ impl InkAbi {
 }
 
 pub const INK_CONTRACT_TEMPLATE: &str = r#"
+Cargo.toml:
+hex = "0.4.2"
+num-bigint = { version = "0.3", default-features = false }
+megaclite-arkworks = { git = "https://github.com/patractlabs/megaclite", default-features = false }
+
 use hex;
-use megaclite::{result::Result, CurveBasicOperations, Error, ErrorKind, SerializationError};
-use alloc::vec::Vec;
+use megaclite_arkworks::{call, result::Result, CurveBasicOperations, Error, ErrorKind, SerializationError};
+use alloc::{string::ToString, vec::Vec};
 use num_bigint::BigUint;
 
-// VK = [alpha beta gamma delta]
-const VK:[&str;14] = [<%vk_alpha%>,
-                    <%vk_beta%>,
-                    <%vk_gamma%>,
-                    <%vk_delta%>];
-const VK_GAMMA_ABC:[&str;<%vk_gamma_abc_len%>] =[<%vk_gamma_abc%>];
+fn ink_contract_template() {
+    use crate::curve::Bls12_381;
+
+    // VK = [alpha beta gamma delta]
+    const VK:[&str;14] = [<%vk_alpha%>,
+                        <%vk_beta%>,
+                        <%vk_gamma%>,
+                        <%vk_delta%>];
+    const VK_GAMMA_ABC:[&str;<%vk_gamma_abc_len%>] =[<%vk_gamma_abc%>];
+
+    let proof_and_input = "c900f310725b3ec9dcc26021a8bc01558f44b7aa9bb6bc98399212652248d9988a3fceeccf07b1787cc7dea439c9b20683bc04a9e5a961a4094fc738f98f4878d5298587f9693bf18505b2cf0737fb49017775469d0215d1e0bd8fb36e36c81600f4f56a8745305c97ed023eaf97c5646ba67300a9430ae8ab437446d5f0fbaa48bcec410bbea6941131b518d1212faa02a032871dcedfd968bd0fc93c45c4e026f91193cb4910f92b98ef3f4fac9cf3d168a8fa338c90a4071a9c374edf80c008fbeb5a067bf5e50f213efc8da9822b5064666d369dd39dfd9199b4c2cb2273b5c4d3685216db4325429821bcde61330bfb5b8801e92cd231d53f2f3c09f39e54b99c3bd3780e9ba31b486f736243dd355406b4c5bc43dc65fd39688a41d8a30f0011333c5d8d51e3429ba5c60be670b62f078a048196b98bd5a890c71f1ff1c746d6d764f455d120ec484f87524c2c4b065e66bfa9ff4ab99f06df246ea397e5757bf5045fde4899d33821e2eb71ebcaac8274d306fc2620e2a88ce1d26f0e92030090000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000";
+
+    assert(
+        preprocessed_verify_proof::<Bls12_381>(VK, VK_GAMMA_ABC, proof_and_input).unwrap(),
+    );
+}
+
+/// preprocess vk and proof to verify proof
+pub fn preprocessed_verify_proof<C: CurveBasicOperations>(
+    vk: [&str; 14],
+    vk_gamma_abc: [&str; 6],
+    proof_and_input: &'static str,
+) -> Result<bool> {
+    let bytes = hex::decode(proof_and_input).map_err(|e| format!("hex decode error:{}", e))?;
+    let (proof, input) = bytes.split_at(2 * C::G1_LEN + C::G2_LEN);
+
+    let mut vk_vec = Vec::new();
+    vk_vec.append(&mut g2_pad_infinity(vk[6], vk[7], vk[8], vk[9]));
+    vk_vec.append(&mut g2_pad_infinity(vk[10], vk[11], vk[12], vk[13]));
+    vk_vec.append(&mut g1_pad_infinity(vk[0], vk[1]));
+    vk_vec.append(&mut g2_pad_infinity(vk[2], vk[3], vk[4], vk[5]));
+
+    verify_proof::<C>(
+        (0..vk_gamma_abc.len() / 2)
+            .map(|i| g1_pad_infinity(vk_gamma_abc[i * 2], vk_gamma_abc[i * 2 + 1]))
+            .collect(),
+        vk_vec,
+        proof.to_vec(),
+        (0..input.len() / C::SCALAR_LEN)
+            .map(|i| input[i * C::SCALAR_LEN..(i + 1) * C::SCALAR_LEN].to_vec())
+            .collect(),
+    )
+}
 
 /// Groth16 verification
-fn verify_proof<C: CurveBasicOperations>(
+pub fn verify_proof<C: CurveBasicOperations>(
     vk_gamma_abc: Vec<Vec<u8>>,
     vk: Vec<u8>,
     proof: Vec<u8>,
@@ -49,15 +91,14 @@ fn verify_proof<C: CurveBasicOperations>(
     let scalar_len = C::SCALAR_LEN;
 
     if (public_inputs.len() + 1) != vk_gamma_abc.len() {
-        return Err("Verifying key was malformed".into());
+        return Err(Error::VerifyParcelFailed);
     }
 
     // First two fields are used as the sum
     let mut acc = vk_gamma_abc[0].to_vec();
 
-    // Compute the linear combination vk_x
-    //  [(βui(x)+αvi(x)+wi(x))/γ] ∈ G1
-    // acc = sigma(i:0~l)* [(βui(x)+αvi(x)+wi(x))/γ] ∈ G1
+    // Compute the linear combination vk_x:[(βui(x)+αvi(x)+wi(x))/γ] ∈ G1
+    // acc = sigma(i:0~l) * [(βui(x)+αvi(x)+wi(x))/γ] ∈ G1
     for (i, b) in public_inputs.iter().zip(vk_gamma_abc.iter().skip(1)) {
         let mut mul_input = Vec::with_capacity(scalar_len + g1_len);
         mul_input.extend_from_slice(b);
@@ -72,9 +113,9 @@ fn verify_proof<C: CurveBasicOperations>(
             )
             .into());
         }
-        let mul_ic = crate::call(0x01000001 + C::CURVE_ID, &mul_input)?;
+        let mul_ic = call(0x01000001 + C::CURVE_ID, &mul_input)?;
 
-        let mut acc_mul_ic = Vec::with_capacity(g1_len*2);
+        let mut acc_mul_ic = Vec::with_capacity(g1_len * 2);
         acc_mul_ic.extend_from_slice(acc.as_ref());
         acc_mul_ic.extend_from_slice(mul_ic.as_ref());
 
@@ -87,7 +128,7 @@ fn verify_proof<C: CurveBasicOperations>(
             )
             .into());
         }
-        acc = crate::call(0x01000000 + C::CURVE_ID, &*acc_mul_ic)?;
+        acc = call(0x01000000 + C::CURVE_ID, &*acc_mul_ic)?;
     }
 
     // The original verification equation is:
@@ -100,25 +141,25 @@ fn verify_proof<C: CurveBasicOperations>(
         (
             &proof[0..g1_len / 2],           // G1 x
             &proof[g1_len / 2..g1_len - 1],  // G1 y
-            &[0u8][..],                      // G1 infinity is false
+            &proof[g1_len - 1..g1_len],      // G1 infinity
             &proof[g1_len..g1_len + g2_len], // G2
         ),
         (
             &acc[0..g1_len / 2],
             &*negate_y::<C>(&acc[g1_len / 2..g1_len - 1]),
-            &[0u8][..],
+            &acc[g1_len - 1..g1_len],
             &vk[0..g2_len],
         ),
         (
             &proof[g1_g2_len..g1_g2_len + g1_len / 2],
             &*negate_y::<C>(&proof[g1_g2_len + g1_len / 2..g1_g2_len + g1_len - 1]),
-            &[0u8][..],
+            &proof[g1_g2_len + g1_len - 1..g1_g2_len + g1_len],
             &vk[g2_len..g2_len * 2],
         ),
         (
             &vk[g2_len * 2..g2_len * 2 + g1_len / 2],
             &*negate_y::<C>(&vk[g2_len * 2 + g1_len / 2..g2_len * 2 + g1_len - 1]),
-            &[0u8][..],
+            &vk[g2_len * 2 + g1_len - 1..g2_len * 2 + g1_len],
             &vk[g2_len * 2 + g1_len..g2_len * 3 + g1_len],
         ),
     ];
@@ -134,7 +175,31 @@ fn verify_proof<C: CurveBasicOperations>(
     // Return the result of computing the pairing check
     // e(p1[0], p2[0]) *  .... * e(p1[n], p2[n]) == 1.
     // For example pairing([P1(), P1().negate()], [P2(), P2()]) should return true.
-    Ok(crate::call(0x01000002 + C::CURVE_ID, &input)?[0] == 0)
+    Ok(call(0x01000002 + C::CURVE_ID, &input)?[0] == 0)
+}
+
+fn g1_pad_infinity(x: &str, y: &str) -> Vec<u8> {
+    let mut bytes = vec![];
+    bytes.append(&mut decode_hex(x.to_string()));
+    bytes.append(&mut decode_hex(y.to_string()));
+    bytes.push(0u8); // infinity flag
+    bytes
+}
+
+fn g2_pad_infinity(x1: &str, y1: &str, x2: &str, y2: &str) -> Vec<u8> {
+    let mut bytes = vec![];
+    bytes.append(&mut decode_hex(x1.to_string()));
+    bytes.append(&mut decode_hex(y1.to_string()));
+    bytes.append(&mut decode_hex(x2.to_string()));
+    bytes.append(&mut decode_hex(y2.to_string()));
+    bytes.push(0u8); // infinity flag
+    bytes
+}
+
+fn decode_hex(value: String) -> Vec<u8> {
+    let mut bytes = hex::decode(value.strip_prefix("0x").unwrap()).unwrap();
+    bytes.reverse();
+    bytes
 }
 
 fn negate_y_based_curve(y: BigUint, MODULUS: &[u8]) -> BigUint {
