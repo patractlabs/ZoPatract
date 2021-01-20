@@ -3,8 +3,8 @@ use ir::Prog;
 use std::io::{Read, Write};
 use zopatract_field::*;
 
-const ZOKRATES_MAGIC: &[u8; 4] = &[0x5a, 0x4f, 0x4b, 0];
-const ZOKRATES_VERSION_1: &[u8; 4] = &[0, 0, 0, 1];
+const ZOPATRACT_MAGIC: &[u8; 4] = &[0x5a, 0x4f, 0x4b, 0];
+const ZOPATRACT_VERSION_1: &[u8; 4] = &[0, 0, 0, 1];
 
 #[derive(PartialEq, Debug)]
 pub enum ProgEnum {
@@ -16,8 +16,8 @@ pub enum ProgEnum {
 
 impl<T: Field> Prog<T> {
     pub fn serialize<W: Write>(&self, mut w: W) {
-        w.write(ZOKRATES_MAGIC).unwrap();
-        w.write(ZOKRATES_VERSION_1).unwrap();
+        w.write(ZOPATRACT_MAGIC).unwrap();
+        w.write(ZOPATRACT_VERSION_1).unwrap();
         w.write(&T::id()).unwrap();
 
         serialize_into(&mut w, self, Infinite).unwrap();
@@ -31,13 +31,13 @@ impl ProgEnum {
         r.read_exact(&mut magic)
             .map_err(|_| String::from("Cannot read magic number"))?;
 
-        if &magic == ZOKRATES_MAGIC {
+        if &magic == ZOPATRACT_MAGIC {
             // Check the version, 1
             let mut version = [0; 4];
             r.read_exact(&mut version)
                 .map_err(|_| String::from("Cannot read version"))?;
 
-            if &version == ZOKRATES_VERSION_1 {
+            if &version == ZOPATRACT_VERSION_1 {
                 // Check the curve identifier, deserializing accordingly
                 let mut curve = [0; 4];
                 r.read_exact(&mut curve)

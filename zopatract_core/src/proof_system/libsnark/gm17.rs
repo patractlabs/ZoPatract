@@ -100,7 +100,7 @@ impl Backend<Bn128Field, GM17> for Libsnark {
         program: Prog<Bn128Field>,
         witness: Witness<Bn128Field>,
         proving_key: Vec<u8>,
-    ) -> Proof<<GM17 as Scheme<Bn128Field>>::ProofPoints> {
+    ) -> (Proof<<GM17 as Scheme<Bn128Field>>::ProofPoints>,String) {
         let (public_inputs_arr, public_inputs_length, private_inputs_arr, private_inputs_length) =
             prepare_generate_proof(program.clone(), witness.clone());
 
@@ -139,7 +139,7 @@ impl Backend<Bn128Field, GM17> for Libsnark {
             .map(|f| format!("0x{:064x}", f.to_biguint()))
             .collect();
 
-        Proof::new(points, public_inputs)
+        (Proof::new(points, public_inputs),"Null".to_string())
     }
 
     fn verify(

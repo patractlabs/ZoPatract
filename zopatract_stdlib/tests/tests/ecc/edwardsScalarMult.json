@@ -1,5 +1,5 @@
 {
-	"entry_point": "./tests/tests/ecc/edwardsScalarMult.zok",
+	"entry_point": "./tests/tests/ecc/edwardsScalarMult.zop",
 	"curves": ["Bn128"],
 	"tests": [
 		{

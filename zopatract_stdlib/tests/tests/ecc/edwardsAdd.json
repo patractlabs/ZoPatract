@@ -1,5 +1,5 @@
 {
-	"entry_point": "./tests/tests/ecc/edwardsAdd.zok",
+	"entry_point": "./tests/tests/ecc/edwardsAdd.zop",
 	"curves": ["Bn128"],
 	"tests": [
 		{

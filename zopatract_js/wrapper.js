@@ -21,7 +21,7 @@ const getAbsolutePath = (basePath, relativePath) => {
 const getImportPath = (currentLocation, importLocation) => {
     let path = getAbsolutePath(currentLocation, importLocation);
     const extension = path.slice((path.lastIndexOf(".") - 1 >>> 0) + 2);
-    return extension ? path : path.concat('.zok');
+    return extension ? path : path.concat('.zop');
 }
 
 module.exports = (dep) => {
@@ -36,7 +36,7 @@ module.exports = (dep) => {
 
     return {
         compile: (source, options = {}) => {
-            const { location = "main.zok", resolveCallback = () => null } = options;
+            const { location = "main.zop", resolveCallback = () => null } = options;
             const callback = (currentLocation, importLocation) => {
                 return resolveFromStdlib(currentLocation, importLocation) || resolveCallback(currentLocation, importLocation);
             };

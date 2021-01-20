@@ -1,5 +1,5 @@
 {
-	"entry_point": "./stdlib/hashes/sha256/512bitPacked.zok",
+	"entry_point": "./stdlib/hashes/sha256/512bitPacked.zop",
 	"curves": ["Bn128"],
 	"tests": [
 		{

@@ -1,5 +1,5 @@
 {
-	"entry_point": "./tests/tests/complex_call.zok",
+	"entry_point": "./tests/tests/complex_call.zop",
 	"tests": [
 		{
 			"input": {

@@ -1,5 +1,5 @@
 {
-    "entry_point": "./tests/tests/hashes/mimc7/mimc7R90.zok",
+    "entry_point": "./tests/tests/hashes/mimc7/mimc7R90.zop",
     "tests": [
         {
             "input": {

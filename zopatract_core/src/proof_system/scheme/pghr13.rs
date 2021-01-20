@@ -38,7 +38,7 @@ impl<T: Field> Scheme<T> for PGHR13 {
 }
 
 impl<T: InkCompatibleField> InkCompatibleScheme<T> for PGHR13 {
-    fn export_ink_verifier(abi: InkAbi) -> String {
+    fn export_ink_verifier(_vk: <PGHR13 as Scheme<T>>::VerificationKey,abi: InkAbi) -> String {
         return match abi {
             InkAbi::V1 => String::from(INK_CONTRACT_TEMPLATE),
             InkAbi::V2 => String::from(INK_CONTRACT_TEMPLATE),

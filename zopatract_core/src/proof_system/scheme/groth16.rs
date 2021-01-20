@@ -38,11 +38,46 @@ impl<T: Field> Scheme<T> for G16 {
 }
 
 impl<T: InkCompatibleField> InkCompatibleScheme<T> for G16 {
-    fn export_ink_verifier(abi: InkAbi) -> String {
-        return match abi {
+    fn export_ink_verifier(vk: <G16 as Scheme<T>>::VerificationKey,abi: InkAbi) -> String {
+        let mut template_text =  match abi {
             InkAbi::V1 => String::from(INK_CONTRACT_TEMPLATE),
             InkAbi::V2 => String::from(INK_CONTRACT_TEMPLATE),
-        }
+        };
+        let vk_regex = Regex::new(r#"(<%vk_[^i%]*%>)"#).unwrap();
+        let vk_gamma_abc_len_regex = Regex::new(r#"(<%vk_gamma_abc_len%>)"#).unwrap();
+        let vk_gamma_abc_regex = Regex::new(r#"(<%vk_gamma_abc%>)"#).unwrap();
+
+        let format_g2affine = |g2:G2Affine|{
+            format!(
+                "\"{}\", \"{}\", \"{}\", \"{}\"",
+                (g2.0).0, (g2.0).1,
+                (g2.1).0, (g2.1).1
+        )};
+
+        template_text = vk_regex
+            .replace(template_text.as_str(),format!("\"{}\",\"{}\"",vk.alpha.0,vk.alpha.1).as_str())
+            .into_owned();
+        template_text = vk_regex
+            .replace(template_text.as_str(), format_g2affine(vk.beta).as_str())
+            .into_owned();
+        template_text = vk_regex
+            .replace(template_text.as_str(),format_g2affine(vk.gamma).as_str())
+            .into_owned();
+        template_text = vk_regex
+            .replace(template_text.as_str(),format_g2affine(vk.delta).as_str())
+            .into_owned();
+        template_text = vk_gamma_abc_len_regex
+            .replace(template_text.as_str(),format!("{}", vk.gamma_abc.len()*2).as_str())
+            .into_owned();
+
+        let mut vk_gamma_abc = String::new();
+        vk.gamma_abc.iter().for_each(|g1| {
+                vk_gamma_abc.extend(format!("\"{}\",\"{}\",",g1.0,g1.1).chars());
+        });
+        template_text = vk_gamma_abc_regex
+            .replace(template_text.as_str(),vk_gamma_abc.strip_suffix(",").unwrap())
+            .into_owned();
+        template_text
     }
 }
 

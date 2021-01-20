@@ -24,7 +24,7 @@ In this tutorial you learn how to use Zopatract and zero knowledge proofs to rev
 The first step is for Alice and Bob to each come up with a preimage value and calculate the hash to commit to it. 
 There are many ways to calculate a hash, but here we use Zopatract. 
 
-1. Create this file under the name `get_hash.zok`:
+1. Create this file under the name `get_hash.zop`:
 ```javascript
 import "hashes/sha256/512bit" as sha256
 
@@ -36,7 +36,7 @@ def main(u32[16] hashMe) -> u32[8]:
 the binary to `get_hash`. You can see a textual representation, somewhat analogous to assembler 
 coming from a compiler, at `get_hash.ztf` if you remove the `--light` command line option.
 ```
-zopatract compile -i get_hash.zok -o get_hash --light
+zopatract compile -i get_hash.zop -o get_hash --light
 ```
 3. The input to the Zopatract program is sixteen 32 bit values, each in decimal. specify those values 
 to get a hash. For example, to calculate the hash of `0x00000000000000010000000200000003000000040000000500000006...`
@@ -58,7 +58,7 @@ Pick your own value and store it somewhere.
 ### Detailed explanation
 This line imports a Zopatract function from the [standard library](https://github.com/Zopatract/ZoPatract/tree/master/zopatract_stdlib/stdlib). 
 You can see the specific function we are importing 
-[here](https://github.com/Zopatract/ZoPatract/blob/master/zopatract_stdlib/stdlib/hashes/sha256/512bit.zok). It will be
+[here](https://github.com/Zopatract/ZoPatract/blob/master/zopatract_stdlib/stdlib/hashes/sha256/512bit.zop). It will be
 called `sha256`.
 ```javascript
 import "hashes/sha256/512bit" as sha256
@@ -80,7 +80,7 @@ def main(u32[16] hashMe) -> u32[8]:
 
 This line does several things. First, `u32[8] h` defines a variable called `h`, whose type is an array of eight 32-bit unsigned integers.
 This variable is initialized using `sha256`, the function we 
-[imported from the standard library](https://github.com/Zopatract/ZoPatract/blob/master/zopatract_stdlib/stdlib/hashes/sha256/512bit.zok).
+[imported from the standard library](https://github.com/Zopatract/ZoPatract/blob/master/zopatract_stdlib/stdlib/hashes/sha256/512bit.zop).
 The `sha256` function expects to get two arrays of eight values each, so we use a [slice `..`](https://zopatract.github.io/language/types.html#slices)
 to divide `hashMe` into two arrays.
 
@@ -101,7 +101,7 @@ Finally, return `h` to the caller to display the hash.
 
 The next step is to reveal a single bit.
 
-1. Use this program, `reveal_bit.zok`:
+1. Use this program, `reveal_bit.zop`:
 ```javascript
 import "hashes/sha256/512bit" as sha256
 import "utils/casts/u32_to_bits" as u32_to_bits
@@ -128,7 +128,7 @@ def main(private u32[16] preimage, field bitNum) -> (u32[8], bool):
 
 2. Compile and run as you did the previous program:
 ```bash
-zopatract compile -i reveal_bit.zok -o reveal_bit --light
+zopatract compile -i reveal_bit.zop -o reveal_bit --light
 zopatract compute-witness --light -i reveal_bit -a 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 510
 ```
 3. The output should be similar to:
@@ -211,7 +211,7 @@ To return multiple values, separate them by commas.
 
 ## Actually using zero knowledge proofs
 
-The `reveal_bit.zok`program reveals a bit from the preimage, but who runs it?
+The `reveal_bit.zop`program reveals a bit from the preimage, but who runs it?
 
 1. If Alice runs the program, she can feed it her secret preimage and receive the correct result. However, when she sends the output there is no reason
    for Bob to trust that she is providing the correct output.
@@ -227,18 +227,18 @@ Proofs give us.
    
 ### Bob's setup stage
 
-2. Compile `reveal_bit.zok` and create the proving and verification keys.
+2. Compile `reveal_bit.zop` and create the proving and verification keys.
    ```
-   zopatract compile -i reveal_bit.zok -o reveal_bit --light
+   zopatract compile -i reveal_bit.zop -o reveal_bit --light
    zopatract setup -i reveal_bit --light
    ```
 3. Copy the file `proving.key` to Alice's directory.
 
 ### Alice reveals a bit
 
-4. Alice should compile `reveal_bit.zok` independently to make sure it doesn't disclose information she wants to keep secret.
+4. Alice should compile `reveal_bit.zop` independently to make sure it doesn't disclose information she wants to keep secret.
    ```
-   zopatract compile -i reveal_bit.zok -o reveal_bit --light
+   zopatract compile -i reveal_bit.zop -o reveal_bit --light
    ```   
    
 5. Next, Alice creates the `witness` file with the values of all the parameters in the program. Using this `witness`, 

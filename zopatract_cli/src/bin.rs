@@ -67,15 +67,23 @@ fn cli_generate_proof<T: Field, S: Scheme<T>, B: Backend<T, S>>(
         .read_to_end(&mut pk)
         .map_err(|why| format!("Couldn't read {}: {}", pk_path.display(), why))?;
 
-    let proof = B::generate_proof(program, witness, pk);
-    let mut proof_file = File::create(proof_path).unwrap();
+    let (proof,proof_hex) = B::generate_proof(program, witness, pk);
+    {
+        let mut proof_file = File::create(proof_path).unwrap();
 
-    let proof = serde_json::to_string_pretty(&proof).unwrap();
-    proof_file
-        .write(proof.as_bytes())
-        .map_err(|why| format!("Couldn't write to {}: {}", proof_path.display(), why))?;
+        let proof = serde_json::to_string_pretty(&proof).unwrap();
+        proof_file
+            .write(proof.as_bytes())
+            .map_err(|why| format!("Couldn't write to {}: {}", proof_path.display(), why))?;
+    }
+    {
+        let mut proof_file = File::create(Path::new("proof.txt")).unwrap();
+        proof_file
+            .write(proof_hex.as_bytes())
+            .map_err(|why| format!("Couldn't write to {}: {}", Path::new("proof.txt").display(), why))?;
+    }
 
-    println!("Proof:\n{}", format!("{}", proof));
+    println!("Proof hex:\n{}", proof_hex);
 
     Ok(())
 }
@@ -110,7 +118,7 @@ fn cli_export_verifier<S: SolidityCompatibleField+InkCompatibleField,
         },
         "ink" => {
             let ink_abi = InkAbi::from(sub_matches.value_of("contract-abi").unwrap())?;
-            let ink_verifier = T::export_ink_verifier(ink_abi);
+            let ink_verifier = T::export_ink_verifier(vk, ink_abi);
 
             let output_file = File::create(Path::new("ink_verifier.rs"))
                 .map_err(|why| format!("Couldn't create ink_verifier.rs: {}", why))?;
@@ -447,9 +455,9 @@ fn cli() -> Result<(), String> {
     const VERIFICATION_CONTRACT_DEFAULT_PATH: &str = "verifier.sol";
     const WITNESS_DEFAULT_PATH: &str = "witness";
     const JSON_PROOF_PATH: &str = "proof.json";
-    let default_curve = env::var("ZOKRATES_CURVE").unwrap_or(constants::BLS12_381.into());
-    let default_backend = env::var("ZOKRATES_BACKEND").unwrap_or(constants::ARK.into());
-    let default_scheme = env::var("ZOKRATES_PROVING_SCHEME").unwrap_or(constants::G16.into());
+    let default_curve = env::var("ZOPATRACT_CURVE").unwrap_or(constants::BLS12_381.into());
+    let default_backend = env::var("ZOPATRACT_BACKEND").unwrap_or(constants::ARK.into());
+    let default_scheme = env::var("ZOPATRACT_PROVING_SCHEME").unwrap_or(constants::G16.into());
     let default_solidity_abi = "v1";
     let default_contract_type = "ink";
     let default_stdlib_path = dirs::home_dir()
@@ -477,7 +485,7 @@ fn cli() -> Result<(), String> {
             .value_name("PATH")
             .takes_value(true)
             .required(false)
-            .env("ZOKRATES_STDLIB")
+            .env("ZOPATRACT_STDLIB")
             .default_value(default_stdlib_path.to_str().unwrap_or(""))
         ).arg(Arg::with_name("abi_spec")
             .short("s")
@@ -524,7 +532,7 @@ fn cli() -> Result<(), String> {
             .value_name("PATH")
             .takes_value(true)
             .required(false)
-            .env("ZOKRATES_STDLIB")
+            .env("ZOPATRACT_STDLIB")
             .default_value(default_stdlib_path.to_str().unwrap_or(""))
         ).arg(Arg::with_name("curve")
             .short("c")

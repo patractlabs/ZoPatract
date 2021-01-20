@@ -1,4 +1,4 @@
-from "./dep.zok" import dep as dep
+from "./dep.zop" import dep as dep
 
 def local(field a) -> field: // this costs 3 constraints per call
 	field res = a ** 8

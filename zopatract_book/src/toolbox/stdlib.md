@@ -1,6 +1,6 @@
 ## Standard library
 
-ZoPatract comes with a number of reusable components in the form of a Standard Library. In order to import it as described in the [imports](./imports.html) section, the `$ZOKRATES_HOME` environment variable must be set to the `stdlib` folder.
+ZoPatract comes with a number of reusable components in the form of a Standard Library. In order to import it as described in the [imports](./imports.html) section, the `$ZOPATRACT_HOME` environment variable must be set to the `stdlib` folder.
 
 The full ZoPatract Standard Library can be found [here](https://github.com/Zopatract/ZoPatract/tree/latest/zopatract_stdlib/stdlib).
 

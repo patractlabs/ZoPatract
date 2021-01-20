@@ -86,7 +86,7 @@ pub trait Backend<T: Field, S: Scheme<T>> {
         program: ir::Prog<T>,
         witness: ir::Witness<T>,
         proving_key: Vec<u8>,
-    ) -> Proof<S::ProofPoints>;
+    ) -> (Proof<S::ProofPoints>,String);
 
     fn verify(vk: S::VerificationKey, proof: Proof<S::ProofPoints>) -> bool;
 }

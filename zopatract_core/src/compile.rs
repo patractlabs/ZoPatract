@@ -294,14 +294,14 @@ mod test {
         fn use_struct_declaration_types() {
             // when importing types and renaming them, we use the canonical struct names in the ABI
 
-            // // main.zok
+            // // main.zop
             // from foo import Foo as FooMain
             //
-            // // foo.zok
+            // // foo.zop
             // from bar import Bar as BarFoo
             // struct Foo { BarFoo b }
             //
-            // // bar.zok
+            // // bar.zop
             // struct Bar { field a }
 
             // Expected resolved type for FooMain:

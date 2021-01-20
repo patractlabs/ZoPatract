@@ -1,5 +1,5 @@
 {
-	"entry_point": "./tests/tests/uint/shift.zok",
+	"entry_point": "./tests/tests/uint/shift.zop",
 	"max_constraint_count": 34,
 	"tests": [
 		{

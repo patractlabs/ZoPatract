@@ -1,4 +1,4 @@
 {
-	"entry_point": "./tests/tests/uint/eq.zok",
+	"entry_point": "./tests/tests/uint/eq.zop",
 	"tests": []
 }

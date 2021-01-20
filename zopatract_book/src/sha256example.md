@@ -13,10 +13,10 @@ Make sure you have followed the instructions in the [Getting Started](gettingsta
 
 We will start this tutorial by using ZoPatract to compute the hash for an arbitrarily chosen preimage, being the number `5` in this example.
 
-First, we create a new file named `hashexample.zok` with the following content:
+First, we create a new file named `hashexample.zop` with the following content:
 
 ```zopatract
-{{#include ../../zopatract_cli/examples/book/hashexample.zok}}
+{{#include ../../zopatract_cli/examples/book/hashexample.zop}}
 ```
 
 The first line imports the `sha256packed` function from the ZoPatract standard library.
@@ -32,7 +32,7 @@ Having our problem described in ZoPatract' DSL, we can now continue using ZoPatr
 First, we compile the program into an arithmetic circuit using the `compile` command.
 
 ```sh
-./zopatract compile -i hashexample.zok
+./zopatract compile -i hashexample.zop
 ```
 
 As a next step we can create a witness file using the following command:
@@ -67,10 +67,10 @@ Let's recall our goal: Peggy wants to prove that she knows a preimage for a dige
 
 To make it work, the two parties have to follow their roles in the protocol:
 
-First, Victor has to specify what hash he is interested in. Therefore, we have to adjust the zkSNARK circuit, compiled by ZoPatract, such that in addition to computing the digest, it also validates it against the digest of interest, provided by Victor. This leads to the following update for `hashexample.zok`:
+First, Victor has to specify what hash he is interested in. Therefore, we have to adjust the zkSNARK circuit, compiled by ZoPatract, such that in addition to computing the digest, it also validates it against the digest of interest, provided by Victor. This leads to the following update for `hashexample.zop`:
 
 ```zopatract
-{{#include ../../zopatract_cli/examples/book/hashexample_updated.zok}}
+{{#include ../../zopatract_cli/examples/book/hashexample_updated.zop}}
 ```
 
 Note that we now compare the result of `sha256packed` with the hard-coded correct solution defined by Victor. The lines which we added are treated as assertions: the verifier will not accept a proof where these constraints were not satisfied. Clearly, this program only returns 1 if all of the computed bits are equal.
@@ -78,7 +78,7 @@ Note that we now compare the result of `sha256packed` with the hard-coded correc
 So, having defined the program, Victor is now ready to compile the code:
 
 ```sh
-./zopatract compile -i hashexample.zok
+./zopatract compile -i hashexample.zop
 ```
 
 Based on that Victor can run the setup phase and export a verifier smart contract as a Solidity file:

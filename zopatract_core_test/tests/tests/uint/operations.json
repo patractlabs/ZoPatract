@@ -1,5 +1,5 @@
 {
-	"entry_point": "./tests/tests/uint/operations.zok",
+	"entry_point": "./tests/tests/uint/operations.zop",
 	"tests": [
 		{
 			"input": {

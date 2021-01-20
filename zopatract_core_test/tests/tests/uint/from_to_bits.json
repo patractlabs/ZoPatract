@@ -1,5 +1,5 @@
 {
-	"entry_point": "./tests/tests/uint/from_to_bits.zok",
+	"entry_point": "./tests/tests/uint/from_to_bits.zop",
 	"max_constraint_count": 34,
 	"tests": [
 		{

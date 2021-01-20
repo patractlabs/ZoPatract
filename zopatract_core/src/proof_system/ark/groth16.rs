@@ -13,6 +13,7 @@ use proof_system::ark::{Ark, serialization};
 use proof_system::groth16::{NotBw6_761Field, ProofPoints, VerificationKey, G16};
 use proof_system::Scheme;
 use proof_system::{Backend, Proof, SetupKeypair};
+use ark_ff::ToBytes;
 
 impl<T: Field + ArkFieldExtensions + NotBw6_761Field> Backend<T, G16> for Ark {
     fn setup(program: Prog<T>) -> SetupKeypair<<G16 as Scheme<T>>::VerificationKey> {
@@ -41,7 +42,7 @@ impl<T: Field + ArkFieldExtensions + NotBw6_761Field> Backend<T, G16> for Ark {
         program: Prog<T>,
         witness: Witness<T>,
         proving_key: Vec<u8>,
-    ) -> Proof<<G16 as Scheme<T>>::ProofPoints> {
+    ) -> (Proof<<G16 as Scheme<T>>::ProofPoints>,String) {
         let computation = Computation::with_witness(program, witness);
         let params = ProvingKey::<<T as ArkFieldExtensions>::ArkEngine>::deserialize_uncompressed(
             &mut proving_key.as_slice(),
@@ -60,7 +61,16 @@ impl<T: Field + ArkFieldExtensions + NotBw6_761Field> Backend<T, G16> for Ark {
             .map(parse_fr::<T>)
             .collect::<Vec<_>>();
 
-        Proof::new(proof_points, inputs)
+        let mut proof_bytes = Vec::new();
+        proof.a.write(&mut proof_bytes).unwrap();
+        proof.b.write(&mut proof_bytes).unwrap();
+        proof.c.write(&mut proof_bytes).unwrap();
+        computation.public_inputs_values()
+            .iter()
+            .for_each(|i|i.write(&mut proof_bytes).unwrap());
+
+        let proof_hex = hex::encode(&proof_bytes);
+        (Proof::new(proof_points, inputs),proof_hex)
     }
 
     fn verify(
@@ -131,7 +141,7 @@ impl Backend<Bw6_761Field, G16> for Ark {
         program: Prog<Bw6_761Field>,
         witness: Witness<Bw6_761Field>,
         proving_key: Vec<u8>,
-    ) -> Proof<<G16 as Scheme<Bw6_761Field>>::ProofPoints> {
+    ) -> (Proof<<G16 as Scheme<Bw6_761Field>>::ProofPoints>,String) {
         let computation = Computation::with_witness(program, witness);
         let params =
             ProvingKey::<<Bw6_761Field as ArkFieldExtensions>::ArkEngine>::deserialize_uncompressed(
@@ -151,7 +161,16 @@ impl Backend<Bw6_761Field, G16> for Ark {
             .map(parse_fr::<Bw6_761Field>)
             .collect::<Vec<_>>();
 
-        Proof::new(proof_points, inputs)
+        let mut proof_bytes = Vec::new();
+        proof.a.write(&mut proof_bytes).unwrap();
+        proof.b.write(&mut proof_bytes).unwrap();
+        proof.c.write(&mut proof_bytes).unwrap();
+        computation.public_inputs_values()
+            .iter()
+            .for_each(|i|i.write(&mut proof_bytes).unwrap());
+
+        let proof_hex = hex::encode(proof_bytes);
+        (Proof::new(proof_points, inputs),proof_hex)
     }
 
     fn verify(

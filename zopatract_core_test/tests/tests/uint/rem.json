@@ -1,5 +1,5 @@
 {
-	"entry_point": "./tests/tests/uint/rem.zok",
+	"entry_point": "./tests/tests/uint/rem.zop",
 	"max_constraint_count": 43,
 	"tests": [
 		{

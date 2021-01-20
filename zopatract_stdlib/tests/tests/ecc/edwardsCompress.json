@@ -1,5 +1,5 @@
 {
-	"entry_point": "./tests/tests/ecc/edwardsCompress.zok",
+	"entry_point": "./tests/tests/ecc/edwardsCompress.zop",
 	"curves": ["Bn128"],
 	"tests": [
 		{

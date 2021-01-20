@@ -37,13 +37,13 @@ impl<'a> Resolver<io::Error> for FileSystemResolver<'a> {
         // other paths `abc/def` are interpreted relative to the standard library root path
         let base = match source.components().next() {
             Some(Component::CurDir) | Some(Component::ParentDir) => {
-                PathBuf::from(current_location).parent().unwrap().into()
+                current_location.parent().unwrap().into()
             }
             _ => PathBuf::from(self.stdlib_root_path.unwrap_or("")),
         };
 
         let path_owned = base
-            .join(PathBuf::from(import_location.clone()))
+            .join(import_location.clone())
             .with_extension("zok");
 
         if !path_owned.is_file() {
@@ -67,12 +67,12 @@ mod tests {
     fn valid_path() {
         // create a source folder with a zok file
         let folder = tempfile::tempdir().unwrap();
-        let file_path = folder.path().join("bar.zok");
+        let file_path = folder.path().join("bar.zop");
         File::create(file_path.clone()).unwrap();
 
         let fs_resolver = FileSystemResolver::default();
         let (_, next_location) = fs_resolver
-            .resolve(file_path.clone(), "./bar.zok".into())
+            .resolve(file_path.clone(), "./bar.zop".into())
             .unwrap();
         assert_eq!(next_location, file_path);
     }
@@ -80,7 +80,7 @@ mod tests {
     #[test]
     fn non_existing_file() {
         let fs_resolver = FileSystemResolver::default();
-        let res = fs_resolver.resolve("./source.zok".into(), "./rubbish".into());
+        let res = fs_resolver.resolve("./source.zop".into(), "./rubbish".into());
         assert!(res.is_err());
     }
 
@@ -107,7 +107,7 @@ mod tests {
     fn no_parent() {
         // create a source folder with a zok file
         let folder = tempfile::tempdir().unwrap();
-        let file_path = folder.path().join("foo.zok");
+        let file_path = folder.path().join("foo.zop");
         File::create(file_path.clone()).unwrap();
 
         let fs_resolver = FileSystemResolver::default();
@@ -120,19 +120,19 @@ mod tests {
         use std::io::Write;
 
         let temp_dir = tempfile::tempdir().unwrap();
-        let file_path = temp_dir.path().join("bar.zok");
+        let file_path = temp_dir.path().join("bar.zop");
         let mut file = File::create(file_path).unwrap();
         writeln!(file, "<stdlib code>").unwrap();
 
         // create a user folder with a code file
         let source_folder = tempfile::tempdir().unwrap();
-        let file_path = source_folder.path().join("bar.zok");
+        let file_path = source_folder.path().join("bar.zop");
         let mut file = File::create(file_path.clone()).unwrap();
         writeln!(file, "<user code>").unwrap();
 
         let stdlib_root_path = temp_dir.path().to_owned();
         let fs_resolver = FileSystemResolver::with_stdlib_root(stdlib_root_path.to_str().unwrap());
-        let result = fs_resolver.resolve(file_path, "./bar.zok".into());
+        let result = fs_resolver.resolve(file_path, "./bar.zop".into());
         assert!(result.is_ok());
         // the imported file should be the user's
         assert_eq!(result.unwrap().0, String::from("<user code>\n"));
@@ -143,19 +143,19 @@ mod tests {
         use std::io::Write;
 
         let temp_dir = tempfile::tempdir().unwrap();
-        let file_path = temp_dir.path().join("bar.zok");
+        let file_path = temp_dir.path().join("bar.zop");
         let mut file = File::create(file_path).unwrap();
         writeln!(file, "<stdlib code>").unwrap();
 
         // create a user folder with a code file
         let source_folder = tempfile::tempdir().unwrap();
-        let file_path = source_folder.path().join("bar.zok");
+        let file_path = source_folder.path().join("bar.zop");
         let mut file = File::create(file_path.clone()).unwrap();
         writeln!(file, "<user code>").unwrap();
 
         let stdlib_root_path = temp_dir.path().to_owned();
         let fs_resolver = FileSystemResolver::with_stdlib_root(stdlib_root_path.to_str().unwrap());
-        let result = fs_resolver.resolve(file_path.clone(), "bar.zok".into());
+        let result = fs_resolver.resolve(file_path.clone(), "bar.zop".into());
         assert!(result.is_ok());
         // the imported file should be the user's
         assert_eq!(result.unwrap().0, String::from("<stdlib code>\n"));
@@ -168,16 +168,16 @@ mod tests {
         // create a user folder with a code file
         let source_folder = tempfile::tempdir().unwrap();
         let source_subfolder = tempfile::tempdir_in(&source_folder).unwrap();
-        let file_path = source_folder.path().join("bar.zok");
+        let file_path = source_folder.path().join("bar.zop");
         let mut file = File::create(file_path).unwrap();
         writeln!(file, "<user code>").unwrap();
-        let origin_path = source_subfolder.path().join("foo.zok");
+        let origin_path = source_subfolder.path().join("foo.zop");
         File::create(origin_path).unwrap();
 
         let fs_resolver = FileSystemResolver::default();
         let result = fs_resolver.resolve(
-            source_subfolder.path().to_path_buf().join("foo.zok"),
-            "../bar.zok".into(),
+            source_subfolder.path().to_path_buf().join("foo.zop"),
+            "../bar.zop".into(),
         );
         assert!(result.is_ok());
         // the imported file should be the user's
@@ -189,20 +189,20 @@ mod tests {
         use std::io::Write;
 
         let temp_dir = tempfile::tempdir().unwrap();
-        let file_path = temp_dir.path().join("bar.zok");
+        let file_path = temp_dir.path().join("bar.zop");
         let mut file = File::create(file_path).unwrap();
         writeln!(file, "<stdlib code>").unwrap();
 
         let stdlib_root_path = temp_dir.path().to_owned();
         let fs_resolver = FileSystemResolver::with_stdlib_root(stdlib_root_path.to_str().unwrap());
-        let result = fs_resolver.resolve("/path/to/source.zok".into(), "./bar.zok".into());
+        let result = fs_resolver.resolve("/path/to/source.zop".into(), "./bar.zop".into());
         assert!(result.is_err());
     }
 
     #[test]
     fn fail_if_not_found_in_std() {
         let fs_resolver = FileSystemResolver::default();
-        let result = fs_resolver.resolve("/path/to/source.zok".into(), "bar.zok".into());
+        let result = fs_resolver.resolve("/path/to/source.zop".into(), "bar.zop".into());
         assert!(result.is_err());
     }
 }

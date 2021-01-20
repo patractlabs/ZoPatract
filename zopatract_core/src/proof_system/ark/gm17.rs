@@ -42,7 +42,7 @@ impl<T: Field + ArkFieldExtensions + NotBw6_761Field> Backend<T, GM17> for Ark {
         program: Prog<T>,
         witness: Witness<T>,
         proving_key: Vec<u8>,
-    ) -> Proof<<GM17 as Scheme<T>>::ProofPoints> {
+    ) -> (Proof<<GM17 as Scheme<T>>::ProofPoints>,String) {
         let computation = Computation::with_witness(program, witness);
         let params = ProvingKey::<<T as ArkFieldExtensions>::ArkEngine>::deserialize_uncompressed(
             &mut proving_key.as_slice(),
@@ -62,7 +62,7 @@ impl<T: Field + ArkFieldExtensions + NotBw6_761Field> Backend<T, GM17> for Ark {
             .map(parse_fr::<T>)
             .collect::<Vec<_>>();
 
-        Proof::new(proof_points, inputs)
+        (Proof::new(proof_points, inputs),"Null".to_string())
     }
 
     fn verify(
@@ -135,7 +135,7 @@ impl Backend<Bw6_761Field, GM17> for Ark {
         program: Prog<Bw6_761Field>,
         witness: Witness<Bw6_761Field>,
         proving_key: Vec<u8>,
-    ) -> Proof<<GM17 as Scheme<Bw6_761Field>>::ProofPoints> {
+    ) -> (Proof<<GM17 as Scheme<Bw6_761Field>>::ProofPoints>,String){
         let computation = Computation::with_witness(program, witness);
         let params =
             ProvingKey::<<Bw6_761Field as ArkFieldExtensions>::ArkEngine>::deserialize_uncompressed(
@@ -156,7 +156,7 @@ impl Backend<Bw6_761Field, GM17> for Ark {
             .map(parse_fr::<Bw6_761Field>)
             .collect::<Vec<_>>();
 
-        Proof::new(proof_points, inputs)
+        (Proof::new(proof_points, inputs),"Null".to_string())
     }
 
     fn verify(

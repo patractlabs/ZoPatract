@@ -1,6 +1,6 @@
 ## Imports
 
-You can separate your code into multiple ZoPatract files using `import` statements to import symbols, ignoring the `.zok` extension of the imported file.
+You can separate your code into multiple ZoPatract files using `import` statements to import symbols, ignoring the `.zop` extension of the imported file.
 
 ### Import syntax
 

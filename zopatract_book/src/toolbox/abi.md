@@ -5,7 +5,7 @@ In order to interact programatically with compiled ZoPatract programs, ZoPatract
 To illustrate this, we'll use the following example program:
 
 ```
-{{#include ../../../zopatract_cli/examples/book/abi.zok}}
+{{#include ../../../zopatract_cli/examples/book/abi.zop}}
 ```
 
 ## ABI specification

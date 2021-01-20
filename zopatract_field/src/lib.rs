@@ -91,7 +91,7 @@ pub trait Field:
     /// Returns the number of bits required to represent any element of this field type.
     fn get_required_bits() -> usize;
     /// Tries to parse a string into this representation
-    fn try_from_dec_str<'a>(s: &'a str) -> Result<Self, ()>;
+    fn try_from_dec_str(s: &str) -> Result<Self, ()>;
     fn try_from_str(s: &str, radix: u32) -> Result<Self, ()>;
     /// Returns a decimal string representing a the member of the equivalence class of this `Field` in Z/pZ
     /// which lies in [-(p-1)/2, (p-1)/2]

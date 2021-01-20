@@ -1,5 +1,5 @@
 {
-    "entry_point": "./tests/tests/hashes/mimcSponge/mimcFeistel.zok",
+    "entry_point": "./tests/tests/hashes/mimcSponge/mimcFeistel.zop",
     "tests": [
         {
             "input": {

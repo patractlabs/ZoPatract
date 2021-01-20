@@ -11,7 +11,7 @@ To write your first SNARK program, check out the ZoPatract plugin in the [Remix 
 We provide one-line installation for Linux, MacOS and FreeBSD:
 
 ```bash
-curl -LSfs get.zokrat.es | sh
+curl -LSfs get.zoprat.es | sh
 ```
 
 ### Docker
@@ -37,10 +37,10 @@ cd target/release
 
 ## Hello ZoPatract!
 
-First, create the text-file `root.zok` and implement your program. In this example, we will prove knowledge of the square root `a` of a number `b`:
+First, create the text-file `root.zop` and implement your program. In this example, we will prove knowledge of the square root `a` of a number `b`:
 
 ```zopatract
-{{#include ../../zopatract_cli/examples/book/factorize.zok}}
+{{#include ../../zopatract_cli/examples/book/factorize.zop}}
 ```
 
 Some observations:
@@ -51,7 +51,7 @@ Then run the different phases of the protocol:
 
 ```bash
 # compile
-zopatract compile -i root.zok
+zopatract compile -i root.zop
 # perform the setup phase
 zopatract setup
 # execute the program

@@ -1,5 +1,5 @@
 {
-	"entry_point": "./tests/tests/uint/rotate.zok",
+	"entry_point": "./tests/tests/uint/rotate.zop",
 	"max_constraint_count": 34,
 	"tests": [
 		{

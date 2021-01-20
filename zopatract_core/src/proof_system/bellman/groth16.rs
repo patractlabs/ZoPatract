@@ -45,7 +45,7 @@ impl<T: Field + BellmanFieldExtensions> Backend<T, G16> for Bellman {
         program: Prog<T>,
         witness: Witness<T>,
         proving_key: Vec<u8>,
-    ) -> Proof<<G16 as Scheme<T>>::ProofPoints> {
+    ) -> (Proof<<G16 as Scheme<T>>::ProofPoints>,String) {
         println!("{}", G16_WARNING);
 
         let computation = Computation::with_witness(program, witness);
@@ -64,7 +64,7 @@ impl<T: Field + BellmanFieldExtensions> Backend<T, G16> for Bellman {
             .map(parse_fr::<T>)
             .collect();
 
-        Proof::new(proof_points, public_inputs)
+        (Proof::new(proof_points, public_inputs),"Null".to_string())
     }
 
     fn verify(
@@ -160,7 +160,7 @@ mod tests {
             .execute(&program, &vec![Bn128Field::from(42)])
             .unwrap();
 
-        let proof =
+        let (proof,_) =
             <Bellman as Backend<Bn128Field, G16>>::generate_proof(program, witness, keypair.pk);
         let ans = <Bellman as Backend<Bn128Field, G16>>::verify(keypair.vk, proof);
 

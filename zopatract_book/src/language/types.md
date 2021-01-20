@@ -13,7 +13,7 @@ As an example, `p` is set to `21888242871839275222246405745257275088548364400416
 While `field` values mostly behave like unsigned integers, one should keep in mind that they overflow at `p` and not some power of 2, so that we have:
 
 ```zopatract
-{{#include ../../../zopatract_cli/examples/book/field_overflow.zok}}
+{{#include ../../../zopatract_cli/examples/book/field_overflow.zop}}
 ```
 
 Note that for field elements, the division operation multiplies the numerator with the denominator's inverse field element. The results coincide with integer divisions for cases with remainder 0, but differ otherwise.
@@ -44,7 +44,7 @@ Arrays can contain elements of any type and have arbitrary dimensions.
 The following example code shows examples of how to use arrays:
 
 ```zopatract
-{{#include ../../../zopatract_cli/examples/book/array.zok}}
+{{#include ../../../zopatract_cli/examples/book/array.zop}}
 ```
 
 #### Declaration and Initialization
@@ -74,7 +74,7 @@ In summary, this leads to the following scheme for array declarations:
 Consider the following example:
 
 ```zopatract
-{{#include ../../../zopatract_cli/examples/book/multidim_array.zok}}
+{{#include ../../../zopatract_cli/examples/book/multidim_array.zop}}
 ```
 
 #### Spreads and Slices
@@ -103,7 +103,7 @@ The contained variables can be of any type.
 The following code shows an example of how to use structs.
 
 ```zopatract
-{{#include ../../../zopatract_cli/examples/book/structs.zok}}
+{{#include ../../../zopatract_cli/examples/book/structs.zop}}
 ```
 
 #### Definition
@@ -124,12 +124,12 @@ Initialization of a variable of a struct type always needs to happen in the same
 The following example shows declaration and initialization of a variable of the `Point` struct type:
 
 ```zopatract
-{{#include ../../../zopatract_cli/examples/book/struct_init.zok}}
+{{#include ../../../zopatract_cli/examples/book/struct_init.zop}}
 ```
 
 #### Assignment
 The variables within a struct instance, the so called members, can be accessed through the `.` operator as shown in the following extended example:
 
 ```zopatract
-{{#include ../../../zopatract_cli/examples/book/struct_assign.zok}}
+{{#include ../../../zopatract_cli/examples/book/struct_assign.zop}}
 ```

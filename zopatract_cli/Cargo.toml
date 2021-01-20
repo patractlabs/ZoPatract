@@ -2,7 +2,7 @@
 name = "zopatract_cli"
 version = "0.6.3"
 authors = ["Jacob Eberhardt <jacob.eberhardt@tu-berlin.de>", "Dennis Kuhnert <mail@kyroy.com>", "Thibaut Schaeffer <thibaut@schaeff.fr>"]
-repository = "https://github.com/JacobEberhardt/ZoPatract.git"
+repository = "https://github.com/patractlabs/ZoPatract.git"
 edition = "2018"
 
 [features]

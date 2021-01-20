@@ -2,7 +2,7 @@
 name = "zopatract_fs_resolver"
 version = "0.5.1"
 authors = ["Thibaut Schaeffer <thibaut@schaeff.fr>"]
-repository = "https://github.com/JacobEberhardt/ZoPatract.git"
+repository = "https://github.com/patractlabs/ZoPatract.git"
 edition = "2018"
 
 [dependencies]

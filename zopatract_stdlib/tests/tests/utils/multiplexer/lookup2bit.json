@@ -1,5 +1,5 @@
 {
-	"entry_point": "./tests/tests/utils/multiplexer/lookup2bit.zok",
+	"entry_point": "./tests/tests/utils/multiplexer/lookup2bit.zop",
 	"curves": ["Bn128"],
 	"tests": [
 		{
