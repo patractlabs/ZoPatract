@@ -2,10 +2,6 @@
 
 ## Installation
 
-### Remix online IDE
-
-To write your first SNARK program, check out the ZoPatract plugin in the [Remix online IDE](https://remix.ethereum.org)!
-
 ### One-line installation
 
 We provide one-line installation for Linux, MacOS and FreeBSD:
