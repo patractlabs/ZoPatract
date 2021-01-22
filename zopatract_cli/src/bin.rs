@@ -14,15 +14,20 @@ use clap::{App, AppSettings, Arg, ArgMatches, SubCommand};
 use serde_json::{from_reader, to_writer_pretty, Value};
 use std::convert::TryFrom;
 use std::env;
-use std::fs::File;
+use std::fs::{self, File};
 use std::io::{stdin, BufReader, BufWriter, Read, Write};
 use std::path::{Path, PathBuf};
 use std::string::String;
 use zopatract_abi::Encode;
 use zopatract_core::compile::{check, compile, CompilationArtifacts, CompileError};
 use zopatract_core::ir::{self, ProgEnum};
-use zopatract_core::proof_system::{ark::Ark, bellman::Bellman, gm17::GM17, groth16::G16, SolidityCompatibleField, InkCompatibleField, InkAbi};
-use zopatract_core::proof_system::{Backend, Scheme, SolidityAbi, SolidityCompatibleScheme,InkCompatibleScheme};
+use zopatract_core::proof_system::{
+    ark::Ark, bellman::Bellman, gm17::GM17, groth16::G16, InkAbi, InkCompatibleField,
+    SolidityCompatibleField,
+};
+use zopatract_core::proof_system::{
+    Backend, InkCompatibleScheme, Scheme, SolidityAbi, SolidityCompatibleScheme,
+};
 use zopatract_core::typed_absy::abi::Abi;
 use zopatract_core::typed_absy::{types::Signature, Type};
 use zopatract_field::{Bls12_377Field, Bls12_381Field, Bn128Field, Bw6_761Field, Field};
@@ -67,7 +72,7 @@ fn cli_generate_proof<T: Field, S: Scheme<T>, B: Backend<T, S>>(
         .read_to_end(&mut pk)
         .map_err(|why| format!("Couldn't read {}: {}", pk_path.display(), why))?;
 
-    let (proof,proof_hex) = B::generate_proof(program, witness, pk);
+    let (proof, proof_hex) = B::generate_proof(program, witness, pk);
     {
         let mut proof_file = File::create(proof_path).unwrap();
 
@@ -78,9 +83,13 @@ fn cli_generate_proof<T: Field, S: Scheme<T>, B: Backend<T, S>>(
     }
     {
         let mut proof_file = File::create(Path::new("proof.txt")).unwrap();
-        proof_file
-            .write(proof_hex.as_bytes())
-            .map_err(|why| format!("Couldn't write to {}: {}", Path::new("proof.txt").display(), why))?;
+        proof_file.write(proof_hex.as_bytes()).map_err(|why| {
+            format!(
+                "Couldn't write to {}: {}",
+                Path::new("proof.txt").display(),
+                why
+            )
+        })?;
     }
 
     println!("Proof hex:\n{}", proof_hex);
@@ -88,8 +97,11 @@ fn cli_generate_proof<T: Field, S: Scheme<T>, B: Backend<T, S>>(
     Ok(())
 }
 
-fn cli_export_verifier<S: SolidityCompatibleField+InkCompatibleField,
-    T: SolidityCompatibleScheme<S> + InkCompatibleScheme<S>>(
+fn cli_export_verifier<
+    S: SolidityCompatibleField + InkCompatibleField,
+    T: SolidityCompatibleScheme<S> + InkCompatibleScheme<S>,
+>(
+    curve: CurveParameter,
     sub_matches: &ArgMatches,
 ) -> Result<(), String> {
     println!("Exporting verifier...");
@@ -115,13 +127,24 @@ fn cli_export_verifier<S: SolidityCompatibleField+InkCompatibleField,
             writer
                 .write_all(&sol_verifier.as_bytes())
                 .map_err(|_| "Failed writing output to file.".to_string())?;
-        },
+        }
         "ink" => {
             let ink_abi = InkAbi::from(sub_matches.value_of("contract-abi").unwrap())?;
-            let (ink_verifier,toml_text) = T::export_ink_verifier(vk, ink_abi);
+            let (mut ink_verifier, toml_text) = T::export_ink_verifier(vk, ink_abi);
+
+            ink_verifier = ink_verifier.replace(
+                "<%curve%>",
+                match curve {
+                    CurveParameter::Bls12_377 => "Bls12_377",
+                    CurveParameter::Bn128 => "Bn254",
+                    CurveParameter::Bls12_381 => "Bls12_381",
+                    CurveParameter::Bw6_761 => "Bw6_761",
+                },
+            );
+            fs::create_dir("zop").map_err(|_| "Failed to create contract directory")?;
 
             // export ink verifier.rs
-            let output_file = File::create(Path::new("ink_verifier.rs"))
+            let output_file = File::create(Path::new("zop/lib.rs"))
                 .map_err(|why| format!("Couldn't create ink_verifier.rs: {}", why))?;
             let mut writer = BufWriter::new(output_file);
             writer
@@ -129,14 +152,14 @@ fn cli_export_verifier<S: SolidityCompatibleField+InkCompatibleField,
                 .map_err(|_| "Failed writing ink_verifier to file.".to_string())?;
 
             // export Cargo.toml
-            let output_file = File::create(Path::new("Cargo.toml"))
+            let output_file = File::create(Path::new("zop/Cargo.toml"))
                 .map_err(|why| format!("Couldn't create Cargo.toml: {}", why))?;
             let mut writer = BufWriter::new(output_file);
             writer
                 .write_all(&toml_text.as_bytes())
                 .map_err(|_| "Failed writing Cargo config to file.".to_string())?;
-        },
-        _ => return Err("Invalid contract type!".to_owned())
+        }
+        _ => return Err("Invalid contract type!".to_owned()),
     }
 
     println!("Finished exporting verifier.");
@@ -299,9 +322,7 @@ fn cli_compile<T: Field>(sub_matches: &ArgMatches) -> Result<(), String> {
     let light = sub_matches.occurrences_of("light") > 0;
 
     let bin_output_path = Path::new(sub_matches.value_of("output").unwrap());
-
     let abi_spec_path = Path::new(sub_matches.value_of("abi_spec").unwrap());
-
     let hr_output_path = bin_output_path.to_path_buf().with_extension("ztf");
 
     let file = File::open(path.clone())
@@ -892,7 +913,6 @@ fn cli() -> Result<(), String> {
                     ProgEnum::Bls12_381Program(p) => cli_setup::<_, G16, Ark>(p, sub_matches),
                     ProgEnum::Bw6_761Program(p) => cli_setup::<_, G16, Ark>(p, sub_matches),
                     ProgEnum::Bn128Program(p) => cli_setup::<_, G16, Ark>(p, sub_matches),
-                    _ => unreachable!(),
                 },
                 #[cfg(feature = "libsnark")]
                 Parameters(
@@ -921,19 +941,19 @@ fn cli() -> Result<(), String> {
             let curve_parameter = CurveParameter::try_from(curve)?;
             let scheme_parameter = SchemeParameter::try_from(scheme)?;
 
-            match (curve_parameter, scheme_parameter) {
+            match (&curve_parameter, scheme_parameter) {
                 (CurveParameter::Bn128, SchemeParameter::G16) => {
-                    cli_export_verifier::<Bn128Field, G16>(sub_matches)
+                    cli_export_verifier::<Bn128Field, G16>(curve_parameter, sub_matches)
                 }
                 (CurveParameter::Bn128, SchemeParameter::GM17) => {
-                    cli_export_verifier::<Bn128Field, GM17>(sub_matches)
+                    cli_export_verifier::<Bn128Field, GM17>(curve_parameter, sub_matches)
                 }
                 #[cfg(feature = "libsnark")]
                 (CurveParameter::Bn128, SchemeParameter::PGHR13) => {
-                    cli_export_verifier::<Bn128Field, PGHR13>(sub_matches)
+                    cli_export_verifier::<Bn128Field, PGHR13>(curve_parameter, sub_matches)
                 }
                 (_, SchemeParameter::G16) => {
-                    cli_export_verifier::<Bn128Field, G16>(sub_matches)
+                    cli_export_verifier::<Bn128Field, G16>(curve_parameter, sub_matches)
                 }
                 _ => Err(format!("Could not export verifier with given parameters (curve: {}, scheme: {}): not supported", curve, scheme))
             }?
@@ -968,32 +988,34 @@ fn cli() -> Result<(), String> {
                     _ => unreachable!(),
                 },
                 Parameters(BackendParameter::Ark, _, SchemeParameter::GM17) => match prog {
-                    ProgEnum::Bls12_377Program(p) =>
-                        cli_generate_proof::<_, GM17, Ark>(p, sub_matches),
+                    ProgEnum::Bls12_377Program(p) => {
+                        cli_generate_proof::<_, GM17, Ark>(p, sub_matches)
+                    }
 
-                    ProgEnum::Bls12_381Program(p) =>
-                        cli_generate_proof::<_, G16, Ark>(p, sub_matches),
+                    ProgEnum::Bls12_381Program(p) => {
+                        cli_generate_proof::<_, G16, Ark>(p, sub_matches)
+                    }
 
-                    ProgEnum::Bw6_761Program(p) =>
-                        cli_generate_proof::<_, GM17, Ark>(p, sub_matches),
+                    ProgEnum::Bw6_761Program(p) => {
+                        cli_generate_proof::<_, GM17, Ark>(p, sub_matches)
+                    }
 
-                    ProgEnum::Bn128Program(p) =>
-                        cli_generate_proof::<_, GM17, Ark>(p, sub_matches),
-                    _ => unreachable!(),
+                    ProgEnum::Bn128Program(p) => cli_generate_proof::<_, GM17, Ark>(p, sub_matches),
                 },
                 Parameters(BackendParameter::Ark, _, SchemeParameter::G16) => match prog {
-                    ProgEnum::Bls12_377Program(p) =>
-                        cli_generate_proof::<_, G16, Ark>(p, sub_matches),
+                    ProgEnum::Bls12_377Program(p) => {
+                        cli_generate_proof::<_, G16, Ark>(p, sub_matches)
+                    }
 
-                    ProgEnum::Bls12_381Program(p) =>
-                        cli_generate_proof::<_, G16, Ark>(p, sub_matches),
+                    ProgEnum::Bls12_381Program(p) => {
+                        cli_generate_proof::<_, G16, Ark>(p, sub_matches)
+                    }
 
-                    ProgEnum::Bw6_761Program(p) =>
-                        cli_generate_proof::<_, G16, Ark>(p, sub_matches),
+                    ProgEnum::Bw6_761Program(p) => {
+                        cli_generate_proof::<_, G16, Ark>(p, sub_matches)
+                    }
 
-                    ProgEnum::Bn128Program(p) =>
-                        cli_generate_proof::<_, G16, Ark>(p, sub_matches),
-                    _ => unreachable!(),
+                    ProgEnum::Bn128Program(p) => cli_generate_proof::<_, G16, Ark>(p, sub_matches),
                 },
                 #[cfg(feature = "libsnark")]
                 Parameters(
@@ -1084,22 +1106,27 @@ fn cli() -> Result<(), String> {
                     CurveParameter::Bw6_761,
                     SchemeParameter::GM17,
                 ) => cli_verify::<Bw6_761Field, GM17, Ark>(sub_matches),
-                Parameters(BackendParameter::Ark,
-                           CurveParameter::Bn128,
-                           SchemeParameter::GM17
-                ) => cli_verify::<Bn128Field, GM17, Ark>(sub_matches),
+                Parameters(BackendParameter::Ark, CurveParameter::Bn128, SchemeParameter::GM17) => {
+                    cli_verify::<Bn128Field, GM17, Ark>(sub_matches)
+                }
                 Parameters(BackendParameter::Ark, CurveParameter::Bn128, SchemeParameter::G16) => {
                     cli_verify::<Bn128Field, G16, Ark>(sub_matches)
                 }
-                Parameters(BackendParameter::Ark, CurveParameter::Bls12_377, SchemeParameter::G16) => {
-                    cli_verify::<Bls12_377Field, G16, Ark>(sub_matches)
-                }
-                Parameters(BackendParameter::Ark, CurveParameter::Bls12_381, SchemeParameter::G16) => {
-                    cli_verify::<Bls12_381Field, G16, Ark>(sub_matches)
-                }
-                Parameters(BackendParameter::Ark, CurveParameter::Bw6_761, SchemeParameter::G16) => {
-                    cli_verify::<Bw6_761Field, G16, Ark>(sub_matches)
-                }
+                Parameters(
+                    BackendParameter::Ark,
+                    CurveParameter::Bls12_377,
+                    SchemeParameter::G16,
+                ) => cli_verify::<Bls12_377Field, G16, Ark>(sub_matches),
+                Parameters(
+                    BackendParameter::Ark,
+                    CurveParameter::Bls12_381,
+                    SchemeParameter::G16,
+                ) => cli_verify::<Bls12_381Field, G16, Ark>(sub_matches),
+                Parameters(
+                    BackendParameter::Ark,
+                    CurveParameter::Bw6_761,
+                    SchemeParameter::G16,
+                ) => cli_verify::<Bw6_761Field, G16, Ark>(sub_matches),
                 #[cfg(feature = "libsnark")]
                 Parameters(
                     BackendParameter::Libsnark,

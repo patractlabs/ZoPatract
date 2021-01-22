@@ -5,7 +5,7 @@ pub trait InkCompatibleField: Field {}
 impl InkCompatibleField for Bn128Field {}
 
 pub trait InkCompatibleScheme<T: InkCompatibleField>: Scheme<T> {
-    fn export_ink_verifier(vk: Self::VerificationKey, abi: InkAbi) -> (String,String);
+    fn export_ink_verifier(vk: Self::VerificationKey, abi: InkAbi) -> (String, String);
 }
 
 pub enum InkAbi {
@@ -26,17 +26,23 @@ impl InkAbi {
 pub const INK_CONTRACT_TEMPLATE: &str = r#"
 #![cfg_attr(not(feature = "std"), no_std)]
 use ink_lang as ink;
-use megaclite_arkworks::{groth16, curve::<%curve%>, result::Error};
 
-// VK = [alpha beta gamma delta]
-static VK:[&str;14] = [<%vk_alpha%>,
-                        <%vk_beta%>,
-                        <%vk_gamma%>,
-                        <%vk_delta%>];
-static VK_GAMMA_ABC:[&str;<%vk_gamma_abc_len%>] =[<%vk_gamma_abc%>];
+extern crate alloc;
 
 #[ink::contract]
 mod zop {
+    use alloc::vec::Vec;
+    use megaclite_arkworks::{groth16, curve::<%curve%>};
+
+    // VK = [alpha beta gamma delta]
+    static VK:[&str;14] = [
+        <%vk_alpha%>,
+        <%vk_beta%>,
+        <%vk_gamma%>,
+        <%vk_delta%>,
+    ];
+    static VK_GAMMA_ABC:[&str;<%vk_gamma_abc_len%>] = [<%vk_gamma_abc%>];
+
     #[ink(storage)]
     pub struct Zop {
         // Stores the ZK result
@@ -51,8 +57,10 @@ mod zop {
         }
 
         #[ink(message)]
-        pub fn verify(&self, proof_and_input: &[u8]) -> Result<bool, Error> {
-            groth16::preprocessed_verify_proof::<<%curve%>>(VK, VK_GAMMA_ABC, proof_and_input)
+        pub fn verify(&self, proof_and_input: Vec<u8>) -> Result<bool, &'static str> {
+            groth16::preprocessed_verify_proof::<<%curve%>>(
+                VK, VK_GAMMA_ABC, proof_and_input.as_slice(),
+            ).map_err(|_| "verify failed")
         }
     }
 }
