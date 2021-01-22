@@ -3,9 +3,7 @@ use proof_system::solidity::{
     SolidityAbi, SOLIDITY_G2_ADDITION_LIB, SOLIDITY_PAIRING_LIB, SOLIDITY_PAIRING_LIB_V2,
 };
 use proof_system::ink::{InkCompatibleField, InkCompatibleScheme, InkAbi, INK_CONTRACT_TEMPLATE};
-use proof_system::{
-    G1Affine, G2Affine, SolidityCompatibleField, SolidityCompatibleScheme
-};
+use proof_system::{G1Affine, G2Affine, SolidityCompatibleField, SolidityCompatibleScheme, CARGO_TOML};
 use regex::Regex;
 use zopatract_field::{Bls12_377Field, Bls12_381Field, Bn128Field, Field};
 
@@ -38,10 +36,10 @@ impl<T: Field> Scheme<T> for G16 {
 }
 
 impl<T: InkCompatibleField> InkCompatibleScheme<T> for G16 {
-    fn export_ink_verifier(vk: <G16 as Scheme<T>>::VerificationKey,abi: InkAbi) -> String {
-        let mut template_text =  match abi {
-            InkAbi::V1 => String::from(INK_CONTRACT_TEMPLATE),
-            InkAbi::V2 => String::from(INK_CONTRACT_TEMPLATE),
+    fn export_ink_verifier(vk: <G16 as Scheme<T>>::VerificationKey,abi: InkAbi) -> (String,String) {
+        let (mut template_text,toml_text) =  match abi {
+            InkAbi::V1 => (String::from(INK_CONTRACT_TEMPLATE),String::from(CARGO_TOML)),
+            InkAbi::V2 => (String::from(INK_CONTRACT_TEMPLATE),String::from(CARGO_TOML))
         };
         let vk_regex = Regex::new(r#"(<%vk_[^i%]*%>)"#).unwrap();
         let vk_gamma_abc_len_regex = Regex::new(r#"(<%vk_gamma_abc_len%>)"#).unwrap();
@@ -77,7 +75,7 @@ impl<T: InkCompatibleField> InkCompatibleScheme<T> for G16 {
         template_text = vk_gamma_abc_regex
             .replace(template_text.as_str(),vk_gamma_abc.strip_suffix(",").unwrap())
             .into_owned();
-        template_text
+        (template_text, toml_text)
     }
 }
 

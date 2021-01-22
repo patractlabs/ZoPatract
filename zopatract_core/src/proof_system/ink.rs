@@ -5,7 +5,7 @@ pub trait InkCompatibleField: Field {}
 impl InkCompatibleField for Bn128Field {}
 
 pub trait InkCompatibleScheme<T: InkCompatibleField>: Scheme<T> {
-    fn export_ink_verifier(vk: Self::VerificationKey, abi: InkAbi) -> String;
+    fn export_ink_verifier(vk: Self::VerificationKey, abi: InkAbi) -> (String,String);
 }
 
 pub enum InkAbi {
