@@ -118,14 +118,23 @@ fn cli_export_verifier<S: SolidityCompatibleField+InkCompatibleField,
         },
         "ink" => {
             let ink_abi = InkAbi::from(sub_matches.value_of("contract-abi").unwrap())?;
-            let ink_verifier = T::export_ink_verifier(vk, ink_abi);
+            let (ink_verifier,toml_text) = T::export_ink_verifier(vk, ink_abi);
 
+            // export ink verifier.rs
             let output_file = File::create(Path::new("ink_verifier.rs"))
                 .map_err(|why| format!("Couldn't create ink_verifier.rs: {}", why))?;
             let mut writer = BufWriter::new(output_file);
             writer
                 .write_all(&ink_verifier.as_bytes())
-                .map_err(|_| "Failed writing output to file.".to_string())?;
+                .map_err(|_| "Failed writing ink_verifier to file.".to_string())?;
+
+            // export Cargo.toml
+            let output_file = File::create(Path::new("Cargo.toml"))
+                .map_err(|why| format!("Couldn't create Cargo.toml: {}", why))?;
+            let mut writer = BufWriter::new(output_file);
+            writer
+                .write_all(&toml_text.as_bytes())
+                .map_err(|_| "Failed writing Cargo config to file.".to_string())?;
         },
         _ => return Err("Invalid contract type!".to_owned())
     }

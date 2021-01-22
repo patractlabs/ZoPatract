@@ -40,10 +40,10 @@ impl Scheme<Bw6_761Field> for GM17 {
     type ProofPoints = ProofPoints<G1Affine, G2AffineFq>;
 }
 impl<T: InkCompatibleField + NotBw6_761Field> InkCompatibleScheme<T> for GM17 {
-    fn export_ink_verifier(_vk: <GM17 as Scheme<T>>::VerificationKey,abi: InkAbi) -> String {
+    fn export_ink_verifier(_vk: <GM17 as Scheme<T>>::VerificationKey,abi: InkAbi) -> (String,String) {
         return match abi {
-            InkAbi::V1 => String::from(INK_CONTRACT_TEMPLATE),
-            InkAbi::V2 => String::from(INK_CONTRACT_TEMPLATE),
+            InkAbi::V1 => (String::from(INK_CONTRACT_TEMPLATE),String::new()),
+            InkAbi::V2 => (String::from(INK_CONTRACT_TEMPLATE),String::new()),
         }
     }
 }
