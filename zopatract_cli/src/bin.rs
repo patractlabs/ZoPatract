@@ -141,19 +141,20 @@ fn cli_export_verifier<
                     CurveParameter::Bw6_761 => "Bw6_761",
                 },
             );
-            fs::create_dir("zop").map_err(|_| "Failed to create contract directory")?;
+            fs::create_dir("zop_ink").map_err(|_| "Failed to create contract zop_ink directory")?;
+            fs::create_dir("zop_ink/src").map_err(|_| "Failed to create contract zop_ink/src directory")?;
 
             // export ink verifier.rs
-            let output_file = File::create(Path::new("zop/lib.rs"))
-                .map_err(|why| format!("Couldn't create ink_verifier.rs: {}", why))?;
+            let output_file = File::create(Path::new("zop_ink/src/lib.rs"))
+                .map_err(|why| format!("Couldn't create zop_ink/src/lib.rs: {}", why))?;
             let mut writer = BufWriter::new(output_file);
             writer
                 .write_all(&ink_verifier.as_bytes())
                 .map_err(|_| "Failed writing ink_verifier to file.".to_string())?;
 
             // export Cargo.toml
-            let output_file = File::create(Path::new("zop/Cargo.toml"))
-                .map_err(|why| format!("Couldn't create Cargo.toml: {}", why))?;
+            let output_file = File::create(Path::new("zop_ink/Cargo.toml"))
+                .map_err(|why| format!("Couldn't create zop_ink/Cargo.toml: {}", why))?;
             let mut writer = BufWriter::new(output_file);
             writer
                 .write_all(&toml_text.as_bytes())
