@@ -1,9 +1,6 @@
-
-<img src="http://www.redaktion.tu-berlin.de/fileadmin/fg308/icons/projekte/logos/ZoPatract_logo.svg" width="100%" height="180">
-
 # ZoPatract
 
-ZoPatract is a toolbox for zkSNARKs on substrate and polkadot.
+ZoPatract is a toolbox adapted to ink contract for zkSNARKs on jupiter.
 
 _This is a proof-of-concept implementation. It has not been tested for production.
 
