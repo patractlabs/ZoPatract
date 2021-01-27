@@ -32,7 +32,7 @@ ZoPatract supports different proving schemes. We identify the schemes by the ref
 | Scheme | CLI flag | Curves |
 | ---- | -------- | ------ |
 | [G16](https://eprint.iacr.org/2016/260) | `--proving-scheme g16` | ALTBN_128, BLS12_377, BW6_761, BLS12_381 |
-| [GM17](https://eprint.iacr.org/2017/540) | `--proving-scheme gm17` | ALTBN_128, BLS12_377, BW6_761 |
+| [GM17](https://eprint.iacr.org/2017/540) | `--proving-scheme gm17` | ALTBN_128, BLS12_377, BW6_761, BLS12_381 |
 | [PGHR13](https://eprint.iacr.org/2013/279) | `--proving-scheme pghr13` | ALTBN_128 |
 
 Default: `G16`
