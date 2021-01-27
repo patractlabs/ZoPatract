@@ -906,9 +906,9 @@ fn cli() -> Result<(), String> {
                 },
                 Parameters(BackendParameter::Ark, _, SchemeParameter::GM17) => match prog {
                     ProgEnum::Bls12_377Program(p) => cli_setup::<_, GM17, Ark>(p, sub_matches),
+                    ProgEnum::Bls12_381Program(p) => cli_setup::<_, GM17, Ark>(p, sub_matches),
                     ProgEnum::Bw6_761Program(p) => cli_setup::<_, GM17, Ark>(p, sub_matches),
                     ProgEnum::Bn128Program(p) => cli_setup::<_, GM17, Ark>(p, sub_matches),
-                    _ => unreachable!(),
                 },
                 Parameters(BackendParameter::Ark, _, SchemeParameter::G16) => match prog {
                     ProgEnum::Bls12_377Program(p) => cli_setup::<_, G16, Ark>(p, sub_matches),
@@ -995,7 +995,7 @@ fn cli() -> Result<(), String> {
                     }
 
                     ProgEnum::Bls12_381Program(p) => {
-                        cli_generate_proof::<_, G16, Ark>(p, sub_matches)
+                        cli_generate_proof::<_, GM17, Ark>(p, sub_matches)
                     }
 
                     ProgEnum::Bw6_761Program(p) => {
@@ -1098,6 +1098,7 @@ fn cli() -> Result<(), String> {
                     CurveParameter::Bls12_381,
                     SchemeParameter::G16,
                 ) => cli_verify::<Bls12_381Field, G16, Bellman>(sub_matches),
+                // ark - gm17
                 Parameters(
                     BackendParameter::Ark,
                     CurveParameter::Bls12_377,
@@ -1105,15 +1106,25 @@ fn cli() -> Result<(), String> {
                 ) => cli_verify::<Bls12_377Field, GM17, Ark>(sub_matches),
                 Parameters(
                     BackendParameter::Ark,
+                    CurveParameter::Bls12_381,
+                    SchemeParameter::GM17,
+                ) => cli_verify::<Bls12_381Field, GM17, Ark>(sub_matches),
+                Parameters(
+                    BackendParameter::Ark,
                     CurveParameter::Bw6_761,
                     SchemeParameter::GM17,
                 ) => cli_verify::<Bw6_761Field, GM17, Ark>(sub_matches),
-                Parameters(BackendParameter::Ark, CurveParameter::Bn128, SchemeParameter::GM17) => {
-                    cli_verify::<Bn128Field, GM17, Ark>(sub_matches)
-                }
-                Parameters(BackendParameter::Ark, CurveParameter::Bn128, SchemeParameter::G16) => {
-                    cli_verify::<Bn128Field, G16, Ark>(sub_matches)
-                }
+                Parameters(
+                    BackendParameter::Ark,
+                    CurveParameter::Bn128,
+                    SchemeParameter::GM17
+                ) => cli_verify::<Bn128Field, GM17, Ark>(sub_matches),
+                // ark - groth16
+                Parameters(
+                    BackendParameter::Ark,
+                    CurveParameter::Bn128,
+                    SchemeParameter::G16
+                ) => cli_verify::<Bn128Field, G16, Ark>(sub_matches),
                 Parameters(
                     BackendParameter::Ark,
                     CurveParameter::Bls12_377,
