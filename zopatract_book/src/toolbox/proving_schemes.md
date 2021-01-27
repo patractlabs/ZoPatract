@@ -11,6 +11,13 @@ Proving schemes supported by ZoPatract require a pairing-friendly elliptic curve
 | BLS12_377 | `--curve bls12_377` | No ([EIP-2539](https://eips.ethereum.org/EIPS/eip-2539))|
 | BW6_761 | `--curve bw6_761` | No ([EIP-3026](https://eips.ethereum.org/EIPS/eip-3026)) |
 
+| Curve | CLI flag | Supported by jupiter(runtime and ink) |
+| ----- | -------- | --------------------- |
+| ALT_BN128 | `--curve bn128` | Yes |
+| BLS12_381 | `--curve bls12_381` | Yes|
+| BLS12_377 | `--curve bls12_377` | Yes |
+| BW6_761 | `--curve bw6_761` | Yes |
+
 Default: `ALT_BN128`
 
 When not using the default, the CLI flag has to be provided for the following commands:
@@ -24,7 +31,7 @@ ZoPatract supports different proving schemes. We identify the schemes by the ref
 
 | Scheme | CLI flag | Curves |
 | ---- | -------- | ------ |
-| [G16](https://eprint.iacr.org/2016/260) | `--proving-scheme g16` | ALTBN_128, BLS12_381 |
+| [G16](https://eprint.iacr.org/2016/260) | `--proving-scheme g16` | ALTBN_128, BLS12_377, BW6_761, BLS12_381 |
 | [GM17](https://eprint.iacr.org/2017/540) | `--proving-scheme gm17` | ALTBN_128, BLS12_377, BW6_761 |
 | [PGHR13](https://eprint.iacr.org/2013/279) | `--proving-scheme pghr13` | ALTBN_128 |
 
@@ -44,7 +51,7 @@ ZoPatract supports multiple backends. The options are the following:
 | ---- | -------- | --------------- | ------ |
 | Bellman | `--backend bellman` | G16 | ALTBN_128, BLS12_381 |
 | Libsnark | `--backend libsnark` | GM17, PGHR13 | ALTBN_128 |
-| Ark | `--backend ark` | GM17 | ALTBN_128, BLS12_377, BW6_761 |
+| Ark | `--backend ark` | GM17,G16 | ALTBN_128, BLS12_377, BW6_761, BLS12_381 |
 
 Default: `bellman`
 
