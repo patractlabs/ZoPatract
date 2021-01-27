@@ -1,0 +1,646 @@
+
+<!DOCTYPE HTML>
+<html lang="" >
+    <head>
+        <meta charset="UTF-8">
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <title>Proving schemes · GitBook</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="description" content="">
+        <meta name="generator" content="GitBook 3.2.3">
+        
+        
+        
+    
+    <link rel="stylesheet" href="../gitbook/style.css">
+
+    
+            
+                
+                <link rel="stylesheet" href="../gitbook/gitbook-plugin-highlight/website.css">
+                
+            
+                
+                <link rel="stylesheet" href="../gitbook/gitbook-plugin-search/search.css">
+                
+            
+                
+                <link rel="stylesheet" href="../gitbook/gitbook-plugin-fontsettings/website.css">
+                
+            
+        
+
+    
+
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+
+        
+    
+    
+    <meta name="HandheldFriendly" content="true"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <link rel="apple-touch-icon-precomposed" sizes="152x152" href="../gitbook/images/apple-touch-icon-precomposed-152.png">
+    <link rel="shortcut icon" href="../gitbook/images/favicon.ico" type="image/x-icon">
+
+    
+    <link rel="next" href="verification.html" />
+    
+    
+    <link rel="prev" href="stdlib.html" />
+    
+
+    </head>
+    <body>
+        
+<div class="book">
+    <div class="book-summary">
+        
+            
+<div id="book-search-input" role="search">
+    <input type="text" placeholder="Type to search" />
+</div>
+
+            
+                <nav role="navigation">
+                
+
+
+<ul class="summary">
+    
+    
+
+    
+
+    
+        
+        
+    
+        <li class="chapter " data-level="1.1" data-path="../">
+            
+                <a href="../">
+            
+                    
+                    Introduction
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2" data-path="../introduction.html">
+            
+                <a href="../introduction.html">
+            
+                    
+                    Introduction
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3" data-path="../gettingstarted.html">
+            
+                <a href="../gettingstarted.html">
+            
+                    
+                    Getting Started
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4" data-path="../language/">
+            
+                <a href="../language/">
+            
+                    
+                    Language
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.4.1" data-path="../language/variables.html">
+            
+                <a href="../language/variables.html">
+            
+                    
+                    Variables
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.2" data-path="../language/types.html">
+            
+                <a href="../language/types.html">
+            
+                    
+                    Types
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.3" data-path="../language/operators.html">
+            
+                <a href="../language/operators.html">
+            
+                    
+                    Operators
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.4" data-path="../language/functions.html">
+            
+                <a href="../language/functions.html">
+            
+                    
+                    Functions
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.5" data-path="../language/control_flow.html">
+            
+                <a href="../language/control_flow.html">
+            
+                    
+                    Control flow
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.6" data-path="../language/imports.html">
+            
+                <a href="../language/imports.html">
+            
+                    
+                    Imports
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.7" data-path="../language/comments.html">
+            
+                <a href="../language/comments.html">
+            
+                    
+                    Comments
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.8" data-path="../language/macros.html">
+            
+                <a href="../language/macros.html">
+            
+                    
+                    Macros
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.5" data-path="./">
+            
+                <a href="./">
+            
+                    
+                    Toolbox
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.5.1" data-path="cli.html">
+            
+                <a href="cli.html">
+            
+                    
+                    CLI
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.5.2" data-path="stdlib.html">
+            
+                <a href="stdlib.html">
+            
+                    
+                    Standard Library
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter active" data-level="1.5.3" data-path="proving_schemes.html">
+            
+                <a href="proving_schemes.html">
+            
+                    
+                    Proving schemes
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.5.4" data-path="verification.html">
+            
+                <a href="verification.html">
+            
+                    
+                    Verification
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.5.5" data-path="ir.html">
+            
+                <a href="ir.html">
+            
+                    
+                    ZIR
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.5.6" data-path="abi.html">
+            
+                <a href="abi.html">
+            
+                    
+                    JSON ABI
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.5.7" data-path="zopatract_js.html">
+            
+                <a href="zopatract_js.html">
+            
+                    
+                    zopatract.js
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.6" data-path="../rng_tutorial.html">
+            
+                <a href="../rng_tutorial.html">
+            
+                    
+                    Tutorial: A zkSNARK RNG
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.7" data-path="../testing.html">
+            
+                <a href="../testing.html">
+            
+                    
+                    Testing
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+    
+
+    <li class="divider"></li>
+
+    <li>
+        <a href="https://www.gitbook.com" target="blank" class="gitbook-link">
+            Published with GitBook
+        </a>
+    </li>
+</ul>
+
+
+                </nav>
+            
+        
+    </div>
+
+    <div class="book-body">
+        
+            <div class="body-inner">
+                
+                    
+
+<div class="book-header" role="navigation">
+    
+
+    <!-- Title -->
+    <h1>
+        <i class="fa fa-circle-o-notch fa-spin"></i>
+        <a href=".." >Proving schemes</a>
+    </h1>
+</div>
+
+
+
+
+                    <div class="page-wrapper" tabindex="-1" role="main">
+                        <div class="page-inner">
+                            
+<div id="book-search-results">
+    <div class="search-noresults">
+    
+                                <section class="normal markdown-section">
+                                
+                                <h1 id="proving-schemes">Proving schemes</h1>
+<h2 id="curves">Curves</h2>
+<p>Proving schemes supported by ZoPatract require a pairing-friendly elliptic curve. The options are the following:</p>
+<table>
+<thead>
+<tr>
+<th>Curve</th>
+<th>CLI flag</th>
+<th>Supported by Ethereum</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ALT_BN128</td>
+<td><code>--curve bn128</code></td>
+<td>Yes (<a href="https://eips.ethereum.org/EIPS/eip-196" target="_blank">EIP-196</a>, <a href="https://eips.ethereum.org/EIPS/eip-197" target="_blank">EIP-197</a>)</td>
+</tr>
+<tr>
+<td>BLS12_381</td>
+<td><code>--curve bls12_381</code></td>
+<td>No (<a href="https://eips.ethereum.org/EIPS/eip-2537" target="_blank">EIP-2537</a>)</td>
+</tr>
+<tr>
+<td>BLS12_377</td>
+<td><code>--curve bls12_377</code></td>
+<td>No (<a href="https://eips.ethereum.org/EIPS/eip-2539" target="_blank">EIP-2539</a>)</td>
+</tr>
+<tr>
+<td>BW6_761</td>
+<td><code>--curve bw6_761</code></td>
+<td>No (<a href="https://eips.ethereum.org/EIPS/eip-3026" target="_blank">EIP-3026</a>)</td>
+</tr>
+</tbody>
+</table>
+<p>Default: <code>ALT_BN128</code></p>
+<p>When not using the default, the CLI flag has to be provided for the following commands:</p>
+<ul>
+<li><code>compile</code></li>
+<li><code>export-verifier</code></li>
+<li><code>verify</code></li>
+</ul>
+<h2 id="schemes">Schemes</h2>
+<p>ZoPatract supports different proving schemes. We identify the schemes by the reference to the paper that introduced them. Currently the options available are:</p>
+<table>
+<thead>
+<tr>
+<th>Scheme</th>
+<th>CLI flag</th>
+<th>Curves</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://eprint.iacr.org/2016/260" target="_blank">G16</a></td>
+<td><code>--proving-scheme g16</code></td>
+<td>ALTBN_128, BLS12_381</td>
+</tr>
+<tr>
+<td><a href="https://eprint.iacr.org/2017/540" target="_blank">GM17</a></td>
+<td><code>--proving-scheme gm17</code></td>
+<td>ALTBN_128, BLS12_377, BW6_761</td>
+</tr>
+<tr>
+<td><a href="https://eprint.iacr.org/2013/279" target="_blank">PGHR13</a></td>
+<td><code>--proving-scheme pghr13</code></td>
+<td>ALTBN_128</td>
+</tr>
+</tbody>
+</table>
+<p>Default: <code>G16</code></p>
+<p>When not using the default, the CLI flag has to be provided for the following commands:</p>
+<ul>
+<li><code>setup</code></li>
+<li><code>export-verifier</code></li>
+<li><code>generate-proof</code></li>
+<li><code>verify</code></li>
+</ul>
+<h2 id="supporting-backends">Supporting backends</h2>
+<p>ZoPatract supports multiple backends. The options are the following:</p>
+<table>
+<thead>
+<tr>
+<th>Backend</th>
+<th>CLI flag</th>
+<th>Proving schemes</th>
+<th>Curves</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Bellman</td>
+<td><code>--backend bellman</code></td>
+<td>G16</td>
+<td>ALTBN_128, BLS12_381</td>
+</tr>
+<tr>
+<td>Libsnark</td>
+<td><code>--backend libsnark</code></td>
+<td>GM17, PGHR13</td>
+<td>ALTBN_128</td>
+</tr>
+<tr>
+<td>Ark</td>
+<td><code>--backend ark</code></td>
+<td>GM17</td>
+<td>ALTBN_128, BLS12_377, BW6_761</td>
+</tr>
+</tbody>
+</table>
+<p>Default: <code>bellman</code></p>
+<p>When not using the default, the CLI flag has to be provided for the following commands:</p>
+<ul>
+<li><code>setup</code></li>
+<li><code>generate-proof</code></li>
+<li><code>verify</code></li>
+</ul>
+<p>To include libsnark in the build, compile ZoPatract from <a href="https://github.com/ZoPatract/ZoPatract/" target="_blank">source</a> with the <code>libsnark</code> feature:</p>
+<pre><code class="lang-bash">cargo +nightly -Z package-features build --release --package zopatract_cli --features=<span class="hljs-string">&quot;libsnark&quot;</span>
+</code></pre>
+<p> Note, that this is only tested for Linux. If you are on another OS, consider using our Docker container, which includes a libsnark installation.</p>
+<h2 id="g16-malleability">G16 malleability</h2>
+<p>When using G16, developers should pay attention to the fact that an attacker, seeing a valid proof, can very easily generate a different but still valid proof. Therefore, depending on the use case, making sure on chain that the same proof cannot be submitted twice may <em>not</em> be enough to guarantee that attackers cannot replay proofs. Mechanisms to solve this issue include:</p>
+<ul>
+<li>signed proofs</li>
+<li>nullifiers</li>
+<li>usage of an ethereum address as a public input to the program</li>
+<li>usage of non-malleable schemes such as GM17</li>
+</ul>
+
+                                
+                                </section>
+                            
+    </div>
+    <div class="search-results">
+        <div class="has-results">
+            
+            <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+            <ul class="search-results-list"></ul>
+            
+        </div>
+        <div class="no-results">
+            
+            <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+            
+        </div>
+    </div>
+</div>
+
+                        </div>
+                    </div>
+                
+            </div>
+
+            
+                
+                <a href="stdlib.html" class="navigation navigation-prev " aria-label="Previous page: Standard Library">
+                    <i class="fa fa-angle-left"></i>
+                </a>
+                
+                
+                <a href="verification.html" class="navigation navigation-next " aria-label="Next page: Verification">
+                    <i class="fa fa-angle-right"></i>
+                </a>
+                
+            
+        
+    </div>
+
+    <script>
+        var gitbook = gitbook || [];
+        gitbook.push(function() {
+            gitbook.page.hasChanged({"page":{"title":"Proving schemes","level":"1.5.3","depth":2,"next":{"title":"Verification","level":"1.5.4","depth":2,"path":"toolbox/verification.md","ref":"toolbox/verification.md","articles":[]},"previous":{"title":"Standard Library","level":"1.5.2","depth":2,"path":"toolbox/stdlib.md","ref":"toolbox/stdlib.md","articles":[]},"dir":"ltr"},"config":{"gitbook":"*","theme":"default","variables":{},"plugins":["livereload"],"pluginsConfig":{"livereload":{},"highlight":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"fontsettings":{"theme":"white","family":"sans","size":2},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"}},"file":{"path":"toolbox/proving_schemes.md","mtime":"2021-01-27T02:27:35.478Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2021-01-27T07:03:03.236Z"},"basePath":"..","book":{"language":""}});
+        });
+    </script>
+</div>
+
+        
+    <script src="../gitbook/gitbook.js"></script>
+    <script src="../gitbook/theme.js"></script>
+    
+        
+        <script src="../gitbook/gitbook-plugin-livereload/plugin.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-search/search-engine.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-search/search.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-lunr/lunr.min.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-lunr/search-lunr.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-sharing/buttons.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-fontsettings/fontsettings.js"></script>
+        
+    
+
+    </body>
+</html>
+

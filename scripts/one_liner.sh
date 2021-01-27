@@ -259,7 +259,7 @@ main() {
     need_cmd mktemp
     need_cmd tar
 
-    git="ZoPatract/ZoPatract"
+    git="patractlabs/ZoPatract"
 
     url="https://github.com/$git"
 
