@@ -92,6 +92,7 @@ fn cli_generate_proof<T: Field, S: Scheme<T>, B: Backend<T, S>>(
         })?;
     }
 
+    println!("Proof format:\n{}", format!("{}", serde_json::to_string_pretty(&proof).unwrap()));
     println!("Proof hex:\n{}", proof_hex);
 
     Ok(())
@@ -486,7 +487,7 @@ fn cli() -> Result<(), String> {
     const VERIFICATION_CONTRACT_DEFAULT_PATH: &str = "verifier.sol";
     const WITNESS_DEFAULT_PATH: &str = "witness";
     const JSON_PROOF_PATH: &str = "proof.json";
-    let default_curve = env::var("ZOPATRACT_CURVE").unwrap_or(constants::BLS12_381.into());
+    let default_curve = env::var("ZOPATRACT_CURVE").unwrap_or(constants::BN128.into());
     let default_backend = env::var("ZOPATRACT_BACKEND").unwrap_or(constants::ARK.into());
     let default_scheme = env::var("ZOPATRACT_PROVING_SCHEME").unwrap_or(constants::G16.into());
     let default_solidity_abi = "v1";
