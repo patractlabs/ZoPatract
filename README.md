@@ -1,3 +1,5 @@
+[中文](https://github.com/patractlabs/ZoPatract/blob/master/README_zh.md)
+
 # ZoPatract
 
 ZoPatract is a toolbox adapted to ink contract for zkSNARKs on jupiter.
@@ -14,10 +16,4 @@ We happily welcome contributions. You can either pick an existing issue to resol
 
 Unless you explicitly state otherwise, any contribution you intentionally submit for inclusion in the work shall be licensed as above, without any additional terms or conditions.
 
-### Git Hooks
 
-You can enable zopatract git hooks locally by running:
-
-```sh
-git config core.hooksPath .githooks
-```
