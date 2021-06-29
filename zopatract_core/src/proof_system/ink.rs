@@ -32,7 +32,7 @@ extern crate alloc;
 #[ink::contract]
 mod zop {
     use alloc::vec::Vec;
-    use megaclite_arkworks::{groth16, curve::<%curve%>};
+    use zkmega_arkworks::{groth16, curve::<%curve%>};
 
     // VK = [alpha beta gamma delta]
     static VK:[&str;14] = [
@@ -74,17 +74,17 @@ authors = ["[your_name] <[your_email]>"]
 edition = "2018"
 
 [dependencies]
-ink_primitives = { version = "3.0.0-rc2", default-features = false }
-ink_metadata = { version = "3.0.0-rc2", default-features = false, features = ["derive"], optional = true }
-ink_env = { version = "3.0.0-rc2", default-features = false }
-ink_storage = { version = "3.0.0-rc2", default-features = false }
-ink_lang = { version = "3.0.0-rc2", default-features = false }
+ink_primitives = { version = "3.0.0-rc3", default-features = false }
+ink_metadata = { version = "3.0.0-rc3", default-features = false, features = ["derive"], optional = true }
+ink_env = { version = "3.0.0-rc3", default-features = false }
+ink_storage = { version = "3.0.0-rc3", default-features = false }
+ink_lang = { version = "3.0.0-rc3", default-features = false }
 
-scale = { package = "parity-scale-codec", version = "1.3", default-features = false, features = ["derive"] }
-scale-info = { version = "0.4.1", default-features = false, features = ["derive"], optional = true }
+scale = { package = "parity-scale-codec", version = "2.1.3", default-features = false, features = ["derive"] }
+scale-info = { version = "0.7.0", default-features = false, features = ["derive"], optional = true }
 
 # megalicte zk library
-megaclite-arkworks = { git = "https://github.com/patractlabs/megaclite.git", default-features = false }
+zkmega-arkworks = { git = "https://github.com/patractlabs/zkmega.git", default-features = false }
 
 [lib]
 name = "zop"
